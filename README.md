@@ -1,0 +1,2 @@
+# mssivimss-dispo-salas
+CU009_VerificarDisponibilidadSalas_SIVIMSS
