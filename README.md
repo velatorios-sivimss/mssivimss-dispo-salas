@@ -1,2 +1,2 @@
-# mssivimss-dispo-salas
-CU009_VerificarDisponibilidadSalas_SIVIMSS
+# mssivimss-arquetipo
+Arquetipo_SIVIMSS
