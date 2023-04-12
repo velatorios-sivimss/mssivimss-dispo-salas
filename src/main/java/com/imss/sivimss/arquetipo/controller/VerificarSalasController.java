@@ -35,4 +35,14 @@ public class VerificarSalasController {
     public Response<?> registrarSalida(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
         return salas.registrarSalida(request,authentication);
     }
+
+    @PostMapping("busquedaDia")
+    public Response<?> detallePorDia(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        return salas.registrarSalida(request,authentication);
+    }
+
+    @PostMapping("consutaContratante")
+    public Response<?> consultaContratante(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        return salas.consultaContratante(request,authentication);
+    }
 }

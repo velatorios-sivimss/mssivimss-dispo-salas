@@ -146,5 +146,32 @@ public class Salas {
         dr.setDatos(parametro);
         return dr;
     }
+    
+    public DatosRequest obtenerDatosContratanteFinado(DatosRequest request){
+        DatosRequest dr = new DatosRequest();
+        Map<String, Object> parametro = new HashMap<>();
+        JsonParser parser = new JsonParser();
+        JsonObject jO =  (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
+        String folioODS = String.valueOf(jO.get("folioODS"));
+        String query = "SELECT " +
+                "SOS.ID_ORDEN_SERVICIO AS idODS, " +
+                "CONCAT(SP.NOM_PERSONA, ' ' , SP.NOM_PRIMER_APELLIDO, ' ', SP.NOM_SEGUNDO_APELLIDO ) AS nombreContratante, " +
+                "CONCAT(SP2.NOM_PERSONA, ' ' , SP2.NOM_PRIMER_APELLIDO, ' ', SP2.NOM_SEGUNDO_APELLIDO ) AS nombreFinado " +
+                "FROM " +
+                "SVC_ORDEN_SERVICIO SOS " +
+                "INNER JOIN SVC_CONTRATANTE SC ON " +
+                "SOS.ID_CONTRATANTE = SC.ID_CONTRATANTE " +
+                "INNER JOIN SVC_PERSONA SP ON " +
+                "SC.ID_PERSONA = SP.ID_PERSONA " +
+                "LEFT JOIN SVC_FINADO SF ON " +
+                "SOS.ID_ORDEN_SERVICIO = SF.ID_ORDEN_SERVICIO " +
+                "LEFT JOIN SVC_PERSONA SP2 ON SP2.ID_PERSONA = SF.ID_PERSONA  " +
+                "WHERE " +
+                "SOS.CVE_FOLIO = '" + folioODS +"'";
+        String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+        parametro.put(AppConstantes.QUERY, encoded);
+        dr.setDatos(parametro);
+        return dr;
+    }
 
 }

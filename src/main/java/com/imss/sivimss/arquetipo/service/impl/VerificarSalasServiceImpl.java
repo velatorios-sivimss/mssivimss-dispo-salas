@@ -68,6 +68,12 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
         }
     }
 
+    @Override
+    public Response<?> consultaContratante(DatosRequest request, Authentication authentication) throws IOException {
+        return providerRestTemplate.consumirServicio(salas.obtenerDatosContratanteFinado(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+                authentication);
+    }
+
     public Boolean validarEstatusODS(String folioODS, Authentication authentication) throws IOException {
         Response<?> respuesta = providerRestTemplate.consumirServicio(salas.verEstatusODS(folioODS).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
