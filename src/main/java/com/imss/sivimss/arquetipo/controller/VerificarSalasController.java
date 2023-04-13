@@ -45,4 +45,8 @@ public class VerificarSalasController {
     public Response<?> consultaContratante(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
         return salas.consultaContratante(request,authentication);
     }
+    @PostMapping("consutaDetalle")
+    public Response<?> consultaDetalleDia(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        return salas.consultaDetalleDia(request,authentication);
+    }
 }

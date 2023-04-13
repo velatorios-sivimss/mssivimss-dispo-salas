@@ -173,5 +173,62 @@ public class Salas {
         dr.setDatos(parametro);
         return dr;
     }
+    
+    public DatosRequest consultarDetalle(DatosRequest request){
+        DatosRequest dr = new DatosRequest();
+        Map<String, Object> parametro = new HashMap<>();
+        JsonParser parser = new JsonParser();
+        JsonObject jO =  (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
+        String fechaConsulta = String.valueOf(jO.get("fechaConsulta"));
+        String idSala = String.valueOf(jO.get("idSala"));
+        String query = "SELECT " +
+                "SBS.ID_REGISTRO AS idRegistro, " +
+                "SBS.ID_SALA AS idSala, " +
+                "SS.NOM_SALA AS nombreSala, " +
+                "SBS.TIM_HORA_ENTRADA AS horaEntrada, " +
+                "if(sbs.TIM_HORA_SALIDA is null, '', sbs.TIM_HORA_SALIDA) as horaSalida, " +
+                "SOS.CVE_FOLIO, " +
+                "( " +
+                "SELECT " +
+                "CONCAT(SP.NOM_PERSONA, ' ' , SP.NOM_PRIMER_APELLIDO, ' ', SP.NOM_SEGUNDO_APELLIDO ) " +
+                "FROM " +
+                "SVC_ORDEN_SERVICIO SOS " +
+                "INNER JOIN SVC_CONTRATANTE SC ON " +
+                "SOS.ID_CONTRATANTE = SC.ID_CONTRATANTE " +
+                "INNER JOIN SVC_PERSONA SP ON " +
+                "SC.ID_PERSONA = SP.ID_PERSONA " +
+                "LEFT JOIN SVC_FINADO SF ON " +
+                "SOS.ID_ORDEN_SERVICIO = SF.ID_ORDEN_SERVICIO " +
+                "WHERE " +
+                "SOS.CVE_FOLIO = SOS.CVE_FOLIO) AS nombreContratante, " +
+                "( " +
+                "SELECT " +
+                "CONCAT(SP2.NOM_PERSONA, ' ' , SP2.NOM_PRIMER_APELLIDO, ' ', SP2.NOM_SEGUNDO_APELLIDO ) " +
+                "FROM " +
+                "SVC_ORDEN_SERVICIO SOS " +
+                "INNER JOIN SVC_CONTRATANTE SC ON " +
+                "SOS.ID_CONTRATANTE = SC.ID_CONTRATANTE " +
+                "INNER JOIN SVC_PERSONA SP ON " +
+                "SC.ID_PERSONA = SP.ID_PERSONA " +
+                "LEFT JOIN SVC_FINADO SF ON " +
+                "SOS.ID_ORDEN_SERVICIO = SF.ID_ORDEN_SERVICIO " +
+                "LEFT JOIN SVC_PERSONA SP2 ON " +
+                "SP2.ID_PERSONA = SF.ID_PERSONA " +
+                "WHERE " +
+                "SOS.CVE_FOLIO = SOS.CVE_FOLIO) AS nombreFinado " +
+                "FROM " +
+                "SVC_BITACORA_SALAS SBS " +
+                "LEFT JOIN SVC_SALA SS ON " +
+                "SBS.ID_SALA = SS.ID_SALA " +
+                "LEFT JOIN SVC_ORDEN_SERVICIO SOS ON " +
+                "SBS.ID_ORDEN_SERVICIO = SOS.ID_ORDEN_SERVICIO " +
+                "WHERE " +
+                "SBS.FEC_ENTRADA = " + fechaConsulta + " " +
+                "AND SBS.ID_SALA = " + idSala;
+        String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+        parametro.put(AppConstantes.QUERY, encoded);
+        dr.setDatos(parametro);
+        return dr;
+    }
 
 }

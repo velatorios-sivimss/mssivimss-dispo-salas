@@ -74,6 +74,14 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
                 authentication);
     }
 
+    @Override
+    public Response<?> consultaDetalleDia(DatosRequest request, Authentication authentication) throws IOException {
+        Response<?> respuesta = providerRestTemplate.consumirServicio(salas.consultarDetalle(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+                authentication);
+        log.info("esto responde ->" + respuesta);
+        return respuesta;
+    }
+
     public Boolean validarEstatusODS(String folioODS, Authentication authentication) throws IOException {
         Response<?> respuesta = providerRestTemplate.consumirServicio(salas.verEstatusODS(folioODS).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
