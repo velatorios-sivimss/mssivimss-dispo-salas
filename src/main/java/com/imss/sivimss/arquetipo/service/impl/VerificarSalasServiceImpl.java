@@ -1,6 +1,8 @@
 package com.imss.sivimss.arquetipo.service.impl;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.imss.sivimss.arquetipo.beans.Salas;
 import com.imss.sivimss.arquetipo.exception.BadRequestException;
 import com.imss.sivimss.arquetipo.model.UsuarioDto;
@@ -70,20 +72,34 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
 
     @Override
     public Response<?> consultaContratante(DatosRequest request, Authentication authentication) throws IOException {
-        return providerRestTemplate.consumirServicio(salas.obtenerDatosContratanteFinado(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+        JsonParser parser = new JsonParser();
+        JsonObject jO =  (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
+        String folioODS = String.valueOf(jO.get("folioODS"));
+        if(validarEstatusODSFolio(folioODS, authentication)){
+        return providerRestTemplate.consumirServicio(salas.obtenerDatosContratanteFinado(folioODS).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
+        }
+        throw new BadRequestException(HttpStatus.BAD_REQUEST, "ODS con el folio " + folioODS + " No tiene estatus generado o en transito");
     }
 
     @Override
     public Response<?> consultaDetalleDia(DatosRequest request, Authentication authentication) throws IOException {
         Response<?> respuesta = providerRestTemplate.consumirServicio(salas.consultarDetalle(request).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
-        log.info("esto responde ->" + respuesta);
         return respuesta;
     }
 
-    public Boolean validarEstatusODS(String folioODS, Authentication authentication) throws IOException {
-        Response<?> respuesta = providerRestTemplate.consumirServicio(salas.verEstatusODS(folioODS).getDatos(), urlDominioConsulta + "/generico/consulta",
+    public Boolean validarEstatusODS(String idODS, Authentication authentication) throws IOException {
+        Response<?> respuesta = providerRestTemplate.consumirServicio(salas.verEstatusODS(idODS).getDatos(), urlDominioConsulta + "/generico/consulta",
+                authentication);
+        if(respuesta.getDatos().toString().contains("CVE_ESTATUS=2") || respuesta.getDatos().toString().contains("CVE_ESTATUS=3")){
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean validarEstatusODSFolio(String idODS, Authentication authentication) throws IOException {
+        Response<?> respuesta = providerRestTemplate.consumirServicio(salas.verEstatusODSFolio(idODS).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
         if(respuesta.getDatos().toString().contains("CVE_ESTATUS=2") || respuesta.getDatos().toString().contains("CVE_ESTATUS=3")){
             return true;
