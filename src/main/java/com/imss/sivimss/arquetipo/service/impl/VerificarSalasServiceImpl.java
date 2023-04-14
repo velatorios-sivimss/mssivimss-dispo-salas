@@ -53,7 +53,7 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
                throw new BadRequestException(HttpStatus.BAD_REQUEST, "Error al insertar");
            }
        }
-        throw new BadRequestException(HttpStatus.BAD_REQUEST, "ODS con ID " + registroEntrada.getIdOds() + "No tiene estatus generado o en transito");
+        return new Response<>(false,HttpStatus.OK.value(),"ODS con el ID " + registroEntrada.getIdOds() + " No tiene estatus generado o en transito");
     }
 
     @Override
@@ -78,8 +78,10 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
         if(validarEstatusODSFolio(folioODS, authentication)){
         return providerRestTemplate.consumirServicio(salas.obtenerDatosContratanteFinado(folioODS).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
+        }else{
+            return new Response<>(false,HttpStatus.OK.value(),"ODS con el folio " + folioODS + " No tiene estatus generado o en transito");
         }
-        throw new BadRequestException(HttpStatus.BAD_REQUEST, "ODS con el folio " + folioODS + " No tiene estatus generado o en transito");
+
     }
 
     @Override
