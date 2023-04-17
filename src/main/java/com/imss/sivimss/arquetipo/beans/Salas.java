@@ -222,6 +222,40 @@ public class Salas {
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
         return dr;
+    } public DatosRequest consultarPorMes(DatosRequest request){
+        DatosRequest dr = new DatosRequest();
+        Map<String, Object> parametro = new HashMap<>();
+        JsonParser parser = new JsonParser();
+        JsonObject jO =  (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
+        String mesConsulta = String.valueOf(jO.get("mes"));
+        String anioConsulta = String.valueOf(jO.get("anio"));
+        String idTipoSala = String.valueOf(jO.get("tipoSala"));
+        String idVelatorio = String.valueOf(jO.get("idVelatorio"));
+        String query = "SELECT  " +
+                "SS.ID_SALA AS idSala, " +
+                "SS.NOM_SALA AS nombreSala, " +
+                "SS.IND_DISPONIBILIDAD AS indDisponibilidad, " +
+                "CASE " +
+                "SS.IND_DISPONIBILIDAD WHEN 1 THEN 'DISPONIBLE' " +
+                "WHEN 2 THEN 'OCUPADA' " +
+                "WHEN 3 THEN 'EN MANTENIMIENTO' " +
+                "END AS estadoSala, " +
+                "SS.CVE_COLOR AS colorSala, " +
+                "SBS.FEC_ENTRADA AS fechaEntrada, " +
+                "SBS.TIM_HORA_ENTRADA as horaEntrada " +
+                "FROM " +
+                "SVC_SALA SS " +
+                "LEFT JOIN SVC_BITACORA_SALAS SBS ON " +
+                "SS.ID_SALA = SBS.ID_SALA " +
+                "WHERE " +
+                "MONTH(SBS.FEC_ENTRADA) =  " + mesConsulta +
+                " AND YEAR (SBS.FEC_ENTRADA) =  " + anioConsulta +
+                " AND SS.ID_VELATORIO =  " + idVelatorio +
+                " AND SS.IND_TIPO_SALA = " + idTipoSala;
+        String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+        parametro.put(AppConstantes.QUERY, encoded);
+        dr.setDatos(parametro);
+        return dr;
     }
 
 }

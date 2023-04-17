@@ -91,6 +91,12 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
         return respuesta;
     }
 
+    @Override
+    public Response<?> consultaSalasMes(DatosRequest request, Authentication authentication) throws IOException {
+        return providerRestTemplate.consumirServicio(salas.consultarPorMes(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+                authentication);
+    }
+
     public Boolean validarEstatusODS(String idODS, Authentication authentication) throws IOException {
         Response<?> respuesta = providerRestTemplate.consumirServicio(salas.verEstatusODS(idODS).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);

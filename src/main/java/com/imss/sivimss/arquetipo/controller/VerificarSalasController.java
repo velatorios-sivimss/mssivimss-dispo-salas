@@ -49,4 +49,9 @@ public class VerificarSalasController {
     public Response<?> consultaDetalleDia(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
         return salas.consultaDetalleDia(request,authentication);
     }
+
+    @PostMapping("consutaCalendario")
+    public Response<?> busquedaSalasMes(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        return salas.consultaSalasMes(request,authentication);
+    }
 }

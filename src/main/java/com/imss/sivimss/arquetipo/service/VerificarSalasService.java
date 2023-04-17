@@ -12,4 +12,5 @@ public interface VerificarSalasService {
     Response<?> registrarSalida(DatosRequest request, Authentication authentication) throws IOException;
     Response<?> consultaContratante(DatosRequest request, Authentication authentication) throws IOException;
     Response<?> consultaDetalleDia(DatosRequest request, Authentication authentication) throws IOException;
+    Response<?> consultaSalasMes(DatosRequest request, Authentication authentication) throws IOException;
 }
