@@ -14,10 +14,9 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.bind.DatatypeConverter;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @Builder
 @Data
@@ -32,6 +31,7 @@ public class Salas {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
         String query = "SELECT " +
+                "BS.ID_REGISTRO as idRegistro, " +
                 "S.ID_SALA AS idSala, " +
                 "S.NOM_SALA AS nombreSala, " +
                 "BS.FEC_ENTRADA fechaEntrada, " +
@@ -263,16 +263,12 @@ public class Salas {
         return dr;
     }
 
-    public Map<String, Object> generarReporte(ReporteDto reporteDto) throws ParseException {
-
-        String fechaCompleta= reporteDto.getMes() + "-"+ reporteDto.getAnio();
-        Date dateF = new SimpleDateFormat("MMMM-yyyy").parse(fechaCompleta);
-        DateFormat anioMes = new SimpleDateFormat("yyyy-MM", new Locale("es", "MX"));
-        String fecha=anioMes.format(dateF);
+    public Map<String, Object> generarReporte(ReporteDto reporteDto){
         Map<String, Object> envioDatos = new HashMap<>();
         envioDatos.put("logoImss", "");
         envioDatos.put("logoSistema", "");
-        envioDatos.put("condition", reporteDto.getCondition());
+        envioDatos.put("condition", " AND SS.IND_TIPO_SALA = " + reporteDto.getIndTipoSala() + " AND SS.ID_VELATORIO = " + reporteDto.getIdVelatorio() +
+                " AND MONTH(SBS.FEC_ENTRADA) = " + reporteDto.getMes() + " AND YEAR (SBS.FEC_ENTRADA) = " + reporteDto.getAnio());
         envioDatos.put("rutaNombreReporte", reporteDto.getRutaNombreReporte());
         envioDatos.put("tipoReporte", reporteDto.getTipoReporte());
         if(reporteDto.getTipoReporte().equals("xls")) {

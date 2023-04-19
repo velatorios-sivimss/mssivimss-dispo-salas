@@ -1,19 +1,18 @@
 package com.imss.sivimss.arquetipo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
-@Getter
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReporteDto {
 	
-	private String velatorio;
-	//private Integer idOoad;
+	private String idVelatorio;
+	private String indTipoSala;
 	private String mes;
 	private String anio;
-	//private String nombreMes;
 	private String condition;
 	private String rutaNombreReporte;
 	private String tipoReporte;

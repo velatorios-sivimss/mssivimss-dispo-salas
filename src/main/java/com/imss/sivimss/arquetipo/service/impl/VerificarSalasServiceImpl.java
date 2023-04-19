@@ -106,7 +106,7 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     public Response<?> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException, ParseException {
         String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
         ReporteDto reporteDto= json.fromJson(datosJson, ReporteDto.class);
-        if(reporteDto.getAnio()==null || reporteDto.getMes()==null || reporteDto.getVelatorio()==null) {
+        if(reporteDto.getAnio()==null || reporteDto.getMes()==null || reporteDto.getIdVelatorio()==null) {
             throw new BadRequestException(HttpStatus.BAD_REQUEST, "Falta infomación");
         }
         Map<String, Object> envioDatos = new Salas().generarReporte(reporteDto);
