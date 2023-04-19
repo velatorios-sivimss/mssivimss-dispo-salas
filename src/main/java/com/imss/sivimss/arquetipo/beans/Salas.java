@@ -212,9 +212,9 @@ public class Salas {
                 " SBS.ID_SALA = SS.ID_SALA " +
                 "LEFT JOIN SVC_ORDEN_SERVICIO SOS ON " +
                 " SBS.ID_ORDEN_SERVICIO = SOS.ID_ORDEN_SERVICIO " +
-                "INNER JOIN SVC_CONTRATANTE SC ON " +
+                "LEFT JOIN SVC_CONTRATANTE SC ON " +
                 "  SOS.ID_CONTRATANTE = SC.ID_CONTRATANTE " +
-                "INNER JOIN SVC_PERSONA SP ON " +
+                "LEFT JOIN SVC_PERSONA SP ON " +
                 "  SC.ID_PERSONA = SP.ID_PERSONA " +
                 "LEFT JOIN SVC_FINADO SF ON " +
                 "  SOS.ID_ORDEN_SERVICIO = SF.ID_ORDEN_SERVICIO " +
