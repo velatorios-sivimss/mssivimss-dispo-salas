@@ -46,19 +46,22 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     public Response<?> registrarEntrada(DatosRequest request, Authentication authentication) throws IOException {
         RegistrarEntradaSalaModel registroEntrada = json.fromJson(String.valueOf(request.getDatos().get(AppConstantes.DATOS)), RegistrarEntradaSalaModel.class);
         UsuarioDto usuarioDto = json.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
-       if(validarEstatusODS(String.valueOf(registroEntrada.getIdOds()), authentication)){
-           Response<?> response = providerRestTemplate.consumirServicio(salas.registrarEntrada(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication);
-           if (response.getCodigo() == 200) {
-               providerRestTemplate.consumirServicio(salas.modificarEstatusSala(registroEntrada.getIdTipoOcupacion(), registroEntrada.getIdSala(),"Entrada").getDatos(),
-                       urlDominioConsulta + "/generico/actualizar", authentication);
-               providerRestTemplate.consumirServicio(salas.modificarEstatusODS(String.valueOf(registroEntrada.getIdOds())).getDatos(),
-                       urlDominioConsulta + "/generico/actualizar", authentication);
-               return response;
-           } else {
-               throw new BadRequestException(HttpStatus.BAD_REQUEST, "Error al insertar");
+       if(registroEntrada.getIdTipoOcupacion() == 2){
+           if(validarEstatusODS(String.valueOf(registroEntrada.getIdOds()), authentication)){
+               Response<?> response = providerRestTemplate.consumirServicio(salas.registrarEntrada(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication);
+               if (response.getCodigo() == 200) {
+                   providerRestTemplate.consumirServicio(salas.modificarEstatusSala(registroEntrada.getIdTipoOcupacion(), registroEntrada.getIdSala(),"Entrada").getDatos(),
+                           urlDominioConsulta + "/generico/actualizar", authentication);
+                   providerRestTemplate.consumirServicio(salas.modificarEstatusODS(String.valueOf(registroEntrada.getIdOds())).getDatos(),
+                           urlDominioConsulta + "/generico/actualizar", authentication);
+                   return response;
+               } else {
+                   throw new BadRequestException(HttpStatus.BAD_REQUEST, "Error al insertar");
+               }
            }
+           return new Response<>(false,HttpStatus.OK.value(),"ODS con el ID " + registroEntrada.getIdOds() + " No tiene estatus generado o en transito");
        }
-        return new Response<>(false,HttpStatus.OK.value(),"ODS con el ID " + registroEntrada.getIdOds() + " No tiene estatus generado o en transito");
+        return providerRestTemplate.consumirServicio(salas.registrarEntrada(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication);
     }
 
     @Override
