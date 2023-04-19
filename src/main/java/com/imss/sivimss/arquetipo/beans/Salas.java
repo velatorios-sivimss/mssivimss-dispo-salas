@@ -265,12 +265,11 @@ public class Salas {
 
     public Map<String, Object> generarReporte(ReporteDto reporteDto){
         Map<String, Object> envioDatos = new HashMap<>();
-        envioDatos.put("logoImss", "");
-        envioDatos.put("logoSistema", "");
         envioDatos.put("condition", " AND SS.IND_TIPO_SALA = " + reporteDto.getIndTipoSala() + " AND SS.ID_VELATORIO = " + reporteDto.getIdVelatorio() +
                 " AND MONTH(SBS.FEC_ENTRADA) = " + reporteDto.getMes() + " AND YEAR (SBS.FEC_ENTRADA) = " + reporteDto.getAnio());
         envioDatos.put("rutaNombreReporte", reporteDto.getRutaNombreReporte());
         envioDatos.put("tipoReporte", reporteDto.getTipoReporte());
+        envioDatos.put("idVelatorio", reporteDto.getIdVelatorio());
         if(reporteDto.getTipoReporte().equals("xls")) {
             envioDatos.put("IS_IGNORE_PAGINATION", true);
         }
