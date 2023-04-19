@@ -128,14 +128,8 @@ public class Salas {
     public DatosRequest registrarSalida(RegistrarEntradaSalaModel registrarEntrada, UsuarioDto user){
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        final QueryHelper q = new QueryHelper("UPDATE SVC_BITACORA_SALAS");
-        q.agregarParametroValues("FEC_SALIDA", "'" + registrarEntrada.getFechaSalida() + "'");
-        q.agregarParametroValues("TIM_HORA_SALIDA", "'" + registrarEntrada.getHoraSalida() + "'");
-        q.agregarParametroValues("CAN_GAS_FINAL", registrarEntrada.getCantidadGasFinal());
-        q.agregarParametroValues("FEC_ACTUALIZACION", "NOW()");
-        q.agregarParametroValues("ID_USUARIO_MODIFICA", String.valueOf(user.getIdUsuario()));
-        q.addWhere("ID_REGISTRO = " + registrarEntrada.getIdRegistro());
-        String query = q.obtenerQueryActualizar();
+        String canGas = Objects.isNull(registrarEntrada.getCantidadGasFinal()) ? null : registrarEntrada.getCantidadGasFinal();
+        String query = "UPDATE SVC_BITACORA_SALAS SET FEC_SALIDA = '" + registrarEntrada.getFechaSalida() + "' , TIM_HORA_SALIDA = '" + registrarEntrada.getHoraSalida() + "', CAN_GAS_FINAL = " + canGas  + ", FEC_ACTUALIZACION = NOW() , ID_USUARIO_MODIFICA = '" + user.getIdUsuario() + "' where ID_REGISTRO = " + registrarEntrada.getIdRegistro();
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);

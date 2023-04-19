@@ -69,13 +69,15 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
         RegistrarEntradaSalaModel registroEntrada = json.fromJson(String.valueOf(request.getDatos().get(AppConstantes.DATOS)), RegistrarEntradaSalaModel.class);
         UsuarioDto usuarioDto = json.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
         Response<?> response = providerRestTemplate.consumirServicio(salas.registrarSalida(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication);
-        if (response.getCodigo() == 200) {
-            providerRestTemplate.consumirServicio(salas.modificarEstatusSala(registroEntrada.getIdTipoOcupacion(), registroEntrada.getIdSala(),"Salida").getDatos(),
-                    urlDominioConsulta + "/generico/actualizar", authentication);
-            return response;
-        } else {
-            throw new BadRequestException(HttpStatus.BAD_REQUEST, "Error al insertar");
-        }
+
+//        if (response.getCodigo() == 200) {
+//            providerRestTemplate.consumirServicio(salas.modificarEstatusSala(registroEntrada.getIdTipoOcupacion(), registroEntrada.getIdSala(),"Salida").getDatos(),
+//                    urlDominioConsulta + "/generico/actualizar", authentication);
+//            return response;
+//        } else {
+//            throw new BadRequestException(HttpStatus.BAD_REQUEST, "Error al insertar");
+//        }
+        return response;
     }
 
     @Override
