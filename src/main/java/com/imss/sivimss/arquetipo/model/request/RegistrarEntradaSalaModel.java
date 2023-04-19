@@ -8,11 +8,11 @@ public class RegistrarEntradaSalaModel {
     @JsonProperty
     private Integer idRegistro;
     @JsonProperty
-    private int idSala;
+    private Integer idSala;
     @JsonProperty
-    private int idOds;
+    private Integer idOds;
     @JsonProperty
-    private int idTipoOcupacion;
+    private Integer idTipoOcupacion;
     @JsonProperty
     private String fechaEntrada;
     @JsonProperty

@@ -34,6 +34,7 @@ endpoints:
    dominio-consulta-paginado: http://localhost:8090/mssivimss-mod-catalogos/generico/paginado
    dominio-crear: http://localhost:8090/mssivimss-mod-catalogos/generico/crear
    dominio-actualizar: http://localhost:8090/mssivimss-mod-catalogos/generico/actualizar
+   dominio-reportes: http://localhost:8088/mssivimss-reportes-jpr/generales/generar-reporte
 
 jwt:
   secretkey-flujo: funcionamuybien

@@ -2,6 +2,7 @@ package com.imss.sivimss.arquetipo.beans;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.imss.sivimss.arquetipo.model.ReporteDto;
 import com.imss.sivimss.arquetipo.model.UsuarioDto;
 import com.imss.sivimss.arquetipo.model.request.RegistrarEntradaSalaModel;
 import com.imss.sivimss.arquetipo.util.AppConstantes;
@@ -13,9 +14,10 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.bind.DatatypeConverter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Builder
 @Data
@@ -29,31 +31,34 @@ public class Salas {
         String tipoSala = String.valueOf(jO.get("tipoSala"));
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String query = "select " +
-                "SBS.ID_REGISTRO as idRegistroBitacora, " +
-                "SS.ID_SALA as idSala, " +
-                "SS.NOM_SALA as nombreSala, " +
-                "SS.IND_DISPONIBILIDAD as indDisponibilidad, " +
-                "case " +
-                "SS.IND_DISPONIBILIDAD when 1 then 'Disponible' " +
-                "when 2 then 'Ocupada' " +
-                "when 3 then 'En mantenimiento' " +
-                "end as estadoSala, " +
-                "if(SBS.FEC_ENTRADA is null, " +
-                "'', " +
-                "SBS.FEC_ENTRADA) as fechaEntrada, " +
-                "if(SBS.TIM_HORA_ENTRADA is null, " +
-                "'', " +
-                "SBS.TIM_HORA_ENTRADA) as horaEntrada " +
-                "from " +
-                "SVC_SALA SS " +
-                "left join SVC_BITACORA_SALAS SBS on " +
-                "SS.ID_SALA = SBS.ID_SALA " +
-                "and ifnull(SBS.FEC_SALIDA,NOW()) >= NOW() " +
-                "and ifnull(SBS.TIM_HORA_SALIDA,DATE_FORMAT(NOW( ), '%H:%i' )) >= DATE_FORMAT(NOW( ), '%H:%i' ) " +
-                "where " +
-                "SS.ID_VELATORIO = " + jsonVelat +
-                " and SS.IND_TIPO_SALA = " + tipoSala;
+        String query = "SELECT " +
+                "S.ID_SALA AS idSala, " +
+                "S.NOM_SALA AS nombreSala, " +
+                "BS.FEC_ENTRADA fechaEntrada, " +
+                "bs.TIM_HORA_ENTRADA AS horaEntrada,  " +
+                "CASE " +
+                "WHEN BS.FEC_ENTRADA = CURDATE() " +
+                "AND BS.ID_TIPO_OCUPACION = 1 " +
+                "AND DATE_FORMAT(BS.TIM_HORA_ENTRADA, '%H:%I' ) <= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                "AND IFNULL(BS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%I' )) >= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                "THEN 'MANTENIMIENTO' " +
+                "WHEN BS.FEC_ENTRADA = CURDATE() " +
+                "AND BS.ID_TIPO_OCUPACION = 2 " +
+                "AND DATE_FORMAT(BS.TIM_HORA_ENTRADA, '%H:%I' ) <= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                "AND IFNULL(BS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%I' )) >= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                " THEN 'OCUPADA' " +
+                "ELSE 'DISPONIBLE' " +
+                "END estadoSala " +
+                "FROM " +
+                "SVC_SALA S " +
+                "LEFT JOIN SVC_BITACORA_SALAS BS ON " +
+                "BS.ID_SALA = S.ID_SALA " +
+                "AND BS.FEC_ENTRADA = CURDATE() " +
+                "AND DATE_FORMAT(BS.TIM_HORA_ENTRADA, '%H:%I' ) <= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                "AND IFNULL(BS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%I' )) >= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                "WHERE " +
+                "S.IND_TIPO_SALA = " + tipoSala + " " +
+                "AND S.ID_VELATORIO = " + jsonVelat;
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
@@ -256,6 +261,24 @@ public class Salas {
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
         return dr;
+    }
+
+    public Map<String, Object> generarReporte(ReporteDto reporteDto) throws ParseException {
+
+        String fechaCompleta= reporteDto.getMes() + "-"+ reporteDto.getAnio();
+        Date dateF = new SimpleDateFormat("MMMM-yyyy").parse(fechaCompleta);
+        DateFormat anioMes = new SimpleDateFormat("yyyy-MM", new Locale("es", "MX"));
+        String fecha=anioMes.format(dateF);
+        Map<String, Object> envioDatos = new HashMap<>();
+        envioDatos.put("logoImss", "");
+        envioDatos.put("logoSistema", "");
+        envioDatos.put("condition", reporteDto.getCondition());
+        envioDatos.put("rutaNombreReporte", reporteDto.getRutaNombreReporte());
+        envioDatos.put("tipoReporte", reporteDto.getTipoReporte());
+        if(reporteDto.getTipoReporte().equals("xls")) {
+            envioDatos.put("IS_IGNORE_PAGINATION", true);
+        }
+        return envioDatos;
     }
 
 }

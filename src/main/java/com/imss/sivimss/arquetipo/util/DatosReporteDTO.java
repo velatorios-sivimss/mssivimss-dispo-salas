@@ -16,7 +16,5 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DatosReporteDTO {
 	private Map<String, Object> datos;
-	private String nombreReporte;
-	private String tipoReporte;
 
 }

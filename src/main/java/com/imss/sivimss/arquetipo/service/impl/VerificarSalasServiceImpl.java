@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.imss.sivimss.arquetipo.beans.Salas;
 import com.imss.sivimss.arquetipo.exception.BadRequestException;
+import com.imss.sivimss.arquetipo.model.ReporteDto;
 import com.imss.sivimss.arquetipo.model.UsuarioDto;
 import com.imss.sivimss.arquetipo.model.request.RegistrarEntradaSalaModel;
 import com.imss.sivimss.arquetipo.service.VerificarSalasService;
@@ -20,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -27,6 +30,8 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     Salas salas = new Salas();
     @Value("${endpoints.dominio-consulta}")
     private String urlDominioConsulta;
+    @Value("${endpoints.dominio-reportes}")
+    private String urlReportes;
     @Autowired
     private ProviderServiceRestTemplate providerRestTemplate;
     Gson json = new Gson();
@@ -94,6 +99,18 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     @Override
     public Response<?> consultaSalasMes(DatosRequest request, Authentication authentication) throws IOException {
         return providerRestTemplate.consumirServicio(salas.consultarPorMes(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+                authentication);
+    }
+
+    @Override
+    public Response<?> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException, ParseException {
+        String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+        ReporteDto reporteDto= json.fromJson(datosJson, ReporteDto.class);
+        if(reporteDto.getAnio()==null || reporteDto.getMes()==null || reporteDto.getVelatorio()==null) {
+            throw new BadRequestException(HttpStatus.BAD_REQUEST, "Falta infomación");
+        }
+        Map<String, Object> envioDatos = new Salas().generarReporte(reporteDto);
+        return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes ,
                 authentication);
     }
 
