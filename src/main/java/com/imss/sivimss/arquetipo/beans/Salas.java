@@ -68,6 +68,7 @@ public class Salas {
     public DatosRequest registrarEntrada(RegistrarEntradaSalaModel registrarEntrada, UsuarioDto user){
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
+        String nombreResponsable = Objects.isNull(registrarEntrada.getNombreResponsable())? "" : registrarEntrada.getNombreResponsable();
         final QueryHelper query = new QueryHelper("INSERT INTO SVC_BITACORA_SALAS");
         query.agregarParametroValues("ID_SALA", String.valueOf(registrarEntrada.getIdSala()));
         query.agregarParametroValues("ID_ORDEN_SERVICIO", String.valueOf(registrarEntrada.getIdOds()));
@@ -76,7 +77,7 @@ public class Salas {
         query.agregarParametroValues("TIM_HORA_ENTRADA", "'" + registrarEntrada.getHoraEntrada() + "'");
         query.agregarParametroValues("CAN_GAS_INICIAL", registrarEntrada.getCantidadGasInicial());
         query.agregarParametroValues("DESC_MANTENIMIENTO", "'" + registrarEntrada.getDescripcionMantenimiento() + "'");
-        query.agregarParametroValues("NOM_RESPONSABLE", Objects.isNull(registrarEntrada.getNombreResponsable())? "" : registrarEntrada.getNombreResponsable());
+        query.agregarParametroValues("NOM_RESPONSABLE", "'" + nombreResponsable + "'");
         query.agregarParametroValues("CVE_ESTATUS", "1");
         query.agregarParametroValues("ID_USUARIO_ALTA", String.valueOf(user.getIdUsuario()));
         String qr = query.obtenerQueryInsertar();
