@@ -39,13 +39,13 @@ public class Salas {
                 "CASE " +
                 "WHEN BS.FEC_ENTRADA = CURDATE() " +
                 "AND BS.ID_TIPO_OCUPACION = 1 " +
-                "AND DATE_FORMAT(BS.TIM_HORA_ENTRADA, '%H:%I' ) <= DATE_FORMAT(NOW( ), '%H:%I' ) " +
-                "AND IFNULL(BS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%I' )) >= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                "AND DATE_FORMAT(BS.TIM_HORA_ENTRADA, '%H:%i' ) <= DATE_FORMAT(NOW( ), '%H:%i' ) " +
+                "AND IFNULL(BS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%i' )) >= DATE_FORMAT(NOW( ), '%H:%i' ) " +
                 "THEN 'MANTENIMIENTO' " +
                 "WHEN BS.FEC_ENTRADA = CURDATE() " +
                 "AND BS.ID_TIPO_OCUPACION = 2 " +
-                "AND DATE_FORMAT(BS.TIM_HORA_ENTRADA, '%H:%I' ) <= DATE_FORMAT(NOW( ), '%H:%I' ) " +
-                "AND IFNULL(BS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%I' )) >= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                "AND DATE_FORMAT(BS.TIM_HORA_ENTRADA, '%H:%i' ) <= DATE_FORMAT(NOW( ), '%H:%i' ) " +
+                "AND IFNULL(BS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%i' )) >= DATE_FORMAT(NOW( ), '%H:%i' ) " +
                 " THEN 'OCUPADA' " +
                 "ELSE 'DISPONIBLE' " +
                 "END estadoSala " +
@@ -54,8 +54,8 @@ public class Salas {
                 "LEFT JOIN SVC_BITACORA_SALAS BS ON " +
                 "BS.ID_SALA = S.ID_SALA " +
                 "AND BS.FEC_ENTRADA = CURDATE() " +
-                "AND DATE_FORMAT(BS.TIM_HORA_ENTRADA, '%H:%I' ) <= DATE_FORMAT(NOW( ), '%H:%I' ) " +
-                "AND IFNULL(BS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%I' )) >= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                "AND DATE_FORMAT(BS.TIM_HORA_ENTRADA, '%H:%i' ) <= DATE_FORMAT(NOW( ), '%H:%i' ) " +
+                "AND IFNULL(BS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%i' )) >= DATE_FORMAT(NOW( ), '%H:%i' ) " +
                 "WHERE " +
                 "S.IND_TIPO_SALA = " + tipoSala + " " +
                 "AND S.ID_VELATORIO = " + jsonVelat;
@@ -230,27 +230,34 @@ public class Salas {
         String anioConsulta = String.valueOf(jO.get("anio"));
         String idTipoSala = String.valueOf(jO.get("tipoSala"));
         String idVelatorio = String.valueOf(jO.get("idVelatorio"));
-        String query = "SELECT  " +
-                "SS.ID_SALA AS idSala, " +
-                "SS.NOM_SALA AS nombreSala, " +
-                "SS.IND_DISPONIBILIDAD AS indDisponibilidad, " +
-                "CASE " +
-                "SS.IND_DISPONIBILIDAD WHEN 1 THEN 'DISPONIBLE' " +
-                "WHEN 2 THEN 'OCUPADA' " +
-                "WHEN 3 THEN 'EN MANTENIMIENTO' " +
-                "END AS estadoSala, " +
-                "SS.CVE_COLOR AS colorSala, " +
-                "SBS.FEC_ENTRADA AS fechaEntrada, " +
-                "SBS.TIM_HORA_ENTRADA as horaEntrada " +
+        String query = "SELECT " +
+                "   SS.ID_SALA AS idSala, " +
+                "   SS.NOM_SALA AS nombreSala, " +
+                "   SS.IND_DISPONIBILIDAD AS indDisponibilidad, " +
+                "   CASE " +
+                "      WHEN SBS.FEC_ENTRADA = CURDATE() " +
+                "      AND SBS.ID_TIPO_OCUPACION = 1 " +
+                "      AND DATE_FORMAT(SBS.TIM_HORA_ENTRADA, '%H:%I' ) <= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                "      AND IFNULL(SBS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%I' )) >= DATE_FORMAT(NOW( ), '%H:%I' ) THEN 'MANTENIMIENTO' " +
+                "      WHEN SBS.FEC_ENTRADA = CURDATE() " +
+                "      AND SBS.ID_TIPO_OCUPACION = 2 " +
+                "      AND DATE_FORMAT(SBS.TIM_HORA_ENTRADA, '%H:%I' ) <= DATE_FORMAT(NOW( ), '%H:%I' ) " +
+                "      AND IFNULL(SBS.TIM_HORA_SALIDA, DATE_FORMAT(NOW( ), '%H:%I' )) >= DATE_FORMAT(NOW( ), '%H:%I' ) THEN 'OCUPADA' " +
+                "      ELSE 'DISPONIBLE' " +
+                "   END estadoSala, " +
+                "   SS.CVE_COLOR AS colorSala, " +
+                "   SBS.FEC_ENTRADA AS fechaEntrada, " +
+                "   SBS.TIM_HORA_ENTRADA AS horaEntrada " +
                 "FROM " +
-                "SVC_SALA SS " +
+                "   SVC_SALA SS " +
                 "LEFT JOIN SVC_BITACORA_SALAS SBS ON " +
-                "SS.ID_SALA = SBS.ID_SALA " +
+                "   SS.ID_SALA = SBS.ID_SALA " +
                 "WHERE " +
-                "MONTH(SBS.FEC_ENTRADA) =  " + mesConsulta +
-                " AND YEAR (SBS.FEC_ENTRADA) =  " + anioConsulta +
-                " AND SS.ID_VELATORIO =  " + idVelatorio +
-                " AND SS.IND_TIPO_SALA = " + idTipoSala;
+                "   MONTH(SBS.FEC_ENTRADA) = " + mesConsulta +
+                "   AND YEAR (SBS.FEC_ENTRADA) = " + anioConsulta +
+                "   AND SS.ID_VELATORIO = " + idVelatorio +
+                "   AND SS.IND_TIPO_SALA = " + idTipoSala +
+                "   GROUP BY SS.ID_SALA";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);

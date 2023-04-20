@@ -14,6 +14,8 @@ public class MensajeResponseUtil {
 	
 	public  static Response<?>mensajeResponse(Response<?> respuestaGenerado, String numeroMensaje) {
 		Integer codigo = respuestaGenerado.getCodigo();
+		log.info("Entrando " + respuestaGenerado);
+		log.info("Entrando " + codigo);
 		if (codigo == 200) {
 			respuestaGenerado.setMensaje(numeroMensaje);
 		} else {

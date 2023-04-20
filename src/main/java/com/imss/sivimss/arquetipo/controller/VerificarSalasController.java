@@ -31,37 +31,73 @@ public class VerificarSalasController {
     @Autowired
     VerificarSalasService salas;
 
+    @CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @TimeLimiter(name = "msflujo")
     @PostMapping("buscarSalas")
-    public Response<?> busquedaSalas(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
-        return salas.buscarSalasPorVelatorio(request,authentication);
+    public CompletableFuture<?> busquedaSalas(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        Response<?> response = salas.buscarSalasPorVelatorio(request,authentication);
+        return CompletableFuture
+                .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }
+    @CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @TimeLimiter(name = "msflujo")
     @PostMapping("registrarEntrada")
-    public Response<?> registrarEntrada(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
-        return salas.registrarEntrada(request,authentication);
+    public CompletableFuture<?> registrarEntrada(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        Response<?> response = salas.registrarEntrada(request,authentication);
+        return CompletableFuture
+                .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }
+    @CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @TimeLimiter(name = "msflujo")
     @PostMapping("registrarSalida")
-    public Response<?> registrarSalida(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
-        return salas.registrarSalida(request,authentication);
+    public CompletableFuture<?> registrarSalida(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        Response<?> response = salas.registrarSalida(request,authentication);
+        return CompletableFuture
+                .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }
 
+    @CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @TimeLimiter(name = "msflujo")
     @PostMapping("busquedaDia")
-    public Response<?> detallePorDia(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
-        return salas.registrarSalida(request,authentication);
+    public CompletableFuture<?> detallePorDia(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        Response<?> response = salas.registrarSalida(request,authentication);
+        return CompletableFuture
+                .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }
 
+    @CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @TimeLimiter(name = "msflujo")
     @PostMapping("consutaContratante")
-    public Response<?> consultaContratante(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
-        return salas.consultaContratante(request,authentication);
+    public CompletableFuture<?> consultaContratante(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        Response<?> response = salas.consultaContratante(request,authentication);
+        return CompletableFuture
+                .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }
+    @CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @TimeLimiter(name = "msflujo")
     @PostMapping("consutaDetalle")
-    public Response<?> consultaDetalleDia(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
-        return salas.consultaDetalleDia(request,authentication);
+    public CompletableFuture<?> consultaDetalleDia(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        Response<?> response = salas.consultaDetalleDia(request,authentication);
+        return CompletableFuture
+                .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }
 
+    @CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @TimeLimiter(name = "msflujo")
     @PostMapping("consutaCalendario")
-    public Response<?> busquedaSalasMes(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
-        return salas.consultaSalasMes(request,authentication);
+    public CompletableFuture<?> busquedaSalasMes(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        Response<?> response = salas.consultaSalasMes(request,authentication);
+        return CompletableFuture
+                .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }
+
     @CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
     @Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
     @TimeLimiter(name = "msflujo")

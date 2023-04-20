@@ -9,10 +9,7 @@ import com.imss.sivimss.arquetipo.model.ReporteDto;
 import com.imss.sivimss.arquetipo.model.UsuarioDto;
 import com.imss.sivimss.arquetipo.model.request.RegistrarEntradaSalaModel;
 import com.imss.sivimss.arquetipo.service.VerificarSalasService;
-import com.imss.sivimss.arquetipo.util.AppConstantes;
-import com.imss.sivimss.arquetipo.util.DatosRequest;
-import com.imss.sivimss.arquetipo.util.ProviderServiceRestTemplate;
-import com.imss.sivimss.arquetipo.util.Response;
+import com.imss.sivimss.arquetipo.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +33,12 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     private ProviderServiceRestTemplate providerRestTemplate;
     Gson json = new Gson();
 
+    private static final String FOLIO_NO_EXISTE = "85"; // El número de folio no existe. Verifica tu información.
+    private static final String PREGUNTA_REGISTRAR = "81"; // ¿Estás seguro de registrar la entrada a esta sala?
+    private static final String REGISTRO_CORRECTO = "84"; // Has registrado la entrada/inicio del servicio correctamente.
+    private static final String REGISTRO_SALIDA = "83"; // Has registrado la salida/término del servicio correctamente.
+    private static final String ERROR_GUARDADO = "5"; // Error al guardar la información. Intenta nuevamente.
+
     @Override
     public Response<?> buscarSalasPorVelatorio(DatosRequest request, Authentication authentication) throws IOException {
         return providerRestTemplate.consumirServicio(salas.buscarSalas(request).getDatos(), urlDominioConsulta + "/generico/consulta",
@@ -54,14 +57,14 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
                            urlDominioConsulta + "/generico/actualizar", authentication);
                    providerRestTemplate.consumirServicio(salas.modificarEstatusODS(String.valueOf(registroEntrada.getIdOds())).getDatos(),
                            urlDominioConsulta + "/generico/actualizar", authentication);
-                   return response;
+                   return MensajeResponseUtil.mensajeResponse(response,REGISTRO_CORRECTO);
                } else {
-                   throw new BadRequestException(HttpStatus.BAD_REQUEST, "Error al insertar");
+                   MensajeResponseUtil.mensajeResponse(response,ERROR_GUARDADO);
                }
            }
-           return new Response<>(false,HttpStatus.OK.value(),"ODS con el ID " + registroEntrada.getIdOds() + " No tiene estatus generado o en transito");
+           return MensajeResponseUtil.mensajeResponse(new Response<>(false,HttpStatus.OK.value(),"ODS con el ID " + registroEntrada.getIdOds() + " No tiene estatus generado o en transito"),ERROR_GUARDADO);
        }
-        return providerRestTemplate.consumirServicio(salas.registrarEntrada(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication);
+        return MensajeResponseUtil.mensajeResponse(providerRestTemplate.consumirServicio(salas.registrarEntrada(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication),REGISTRO_CORRECTO);
     }
 
     @Override
@@ -69,15 +72,7 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
         RegistrarEntradaSalaModel registroEntrada = json.fromJson(String.valueOf(request.getDatos().get(AppConstantes.DATOS)), RegistrarEntradaSalaModel.class);
         UsuarioDto usuarioDto = json.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
         Response<?> response = providerRestTemplate.consumirServicio(salas.registrarSalida(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication);
-
-//        if (response.getCodigo() == 200) {
-//            providerRestTemplate.consumirServicio(salas.modificarEstatusSala(registroEntrada.getIdTipoOcupacion(), registroEntrada.getIdSala(),"Salida").getDatos(),
-//                    urlDominioConsulta + "/generico/actualizar", authentication);
-//            return response;
-//        } else {
-//            throw new BadRequestException(HttpStatus.BAD_REQUEST, "Error al insertar");
-//        }
-        return response;
+        return MensajeResponseUtil.mensajeResponse(response,REGISTRO_SALIDA);
     }
 
     @Override
@@ -89,7 +84,7 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
         return providerRestTemplate.consumirServicio(salas.obtenerDatosContratanteFinado(folioODS).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
         }else{
-            return new Response<>(false,HttpStatus.OK.value(),"ODS con el folio " + folioODS + " No tiene estatus generado o en transito");
+            return MensajeResponseUtil.mensajeResponse(new Response<>(false,HttpStatus.OK.value(),"ODS con el ID " +folioODS + " No tiene estatus generado o en transito"),ERROR_GUARDADO);
         }
 
     }
