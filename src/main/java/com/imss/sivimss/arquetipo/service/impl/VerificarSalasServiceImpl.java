@@ -41,6 +41,7 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
 
     @Override
     public Response<?> buscarSalasPorVelatorio(DatosRequest request, Authentication authentication) throws IOException {
+        LogUtil.crearArchivoLog("info","VerificarSalasServiceImpl",System.getProperty("user.dir"),"esta es una prueba de salto de renglon");
         return providerRestTemplate.consumirServicio(salas.buscarSalas(request).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
     }
@@ -99,6 +100,13 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     @Override
     public Response<?> consultaSalasMes(DatosRequest request, Authentication authentication) throws IOException {
         return providerRestTemplate.consumirServicio(salas.consultarPorMes(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+                authentication);
+    }
+
+    @Override
+    public Response<?> consultaAlertas(DatosRequest request, Authentication authentication) throws IOException {
+        LogUtil.crearArchivoLog("info","VerificarSalasServiceImpl",System.getProperty("user.dir"),"consultandoAlertas");
+        return providerRestTemplate.consumirServicio(salas.consultaAlertas(request).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
     }
 

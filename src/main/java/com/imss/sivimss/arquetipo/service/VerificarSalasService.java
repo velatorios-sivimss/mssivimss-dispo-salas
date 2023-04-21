@@ -14,5 +14,6 @@ public interface VerificarSalasService {
     Response<?> consultaContratante(DatosRequest request, Authentication authentication) throws IOException;
     Response<?> consultaDetalleDia(DatosRequest request, Authentication authentication) throws IOException;
     Response<?> consultaSalasMes(DatosRequest request, Authentication authentication) throws IOException;
+    Response<?> consultaAlertas(DatosRequest request, Authentication authentication) throws IOException;
     Response<?> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException, ParseException;
 }

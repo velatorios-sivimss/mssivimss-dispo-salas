@@ -25,7 +25,7 @@ import java.util.Objects;
 public class Salas {
     public DatosRequest buscarSalas(DatosRequest request) {
         JsonParser parser = new JsonParser();
-        JsonObject jO =  (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
+        JsonObject jO = (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
         String jsonVelat = String.valueOf(jO.get("idVelatorio"));
         String tipoSala = String.valueOf(jO.get("tipoSala"));
         DatosRequest dr = new DatosRequest();
@@ -65,10 +65,10 @@ public class Salas {
         return dr;
     }
 
-    public DatosRequest registrarEntrada(RegistrarEntradaSalaModel registrarEntrada, UsuarioDto user){
+    public DatosRequest registrarEntrada(RegistrarEntradaSalaModel registrarEntrada, UsuarioDto user) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String nombreResponsable = Objects.isNull(registrarEntrada.getNombreResponsable())? "" : registrarEntrada.getNombreResponsable();
+        String nombreResponsable = Objects.isNull(registrarEntrada.getNombreResponsable()) ? "" : registrarEntrada.getNombreResponsable();
         final QueryHelper query = new QueryHelper("INSERT INTO SVC_BITACORA_SALAS");
         query.agregarParametroValues("ID_SALA", String.valueOf(registrarEntrada.getIdSala()));
         query.agregarParametroValues("ID_ORDEN_SERVICIO", String.valueOf(registrarEntrada.getIdOds()));
@@ -87,8 +87,8 @@ public class Salas {
         return dr;
     }
 
-    public DatosRequest modificarEstatusSala(int idTipoOcupacion , int idSala, String movimiento){
-        if(movimiento == "Entrada"){
+    public DatosRequest modificarEstatusSala(int idTipoOcupacion, int idSala, String movimiento) {
+        if (movimiento == "Entrada") {
             DatosRequest dr = new DatosRequest();
             Map<String, Object> parametro = new HashMap<>();
             final QueryHelper q = new QueryHelper("UPDATE SVC_SALA");
@@ -99,7 +99,7 @@ public class Salas {
             parametro.put(AppConstantes.QUERY, encoded);
             dr.setDatos(parametro);
             return dr;
-        }else{
+        } else {
             DatosRequest dr = new DatosRequest();
             Map<String, Object> parametro = new HashMap<>();
             final QueryHelper q = new QueryHelper("UPDATE SVC_SALA");
@@ -114,7 +114,7 @@ public class Salas {
 
     }
 
-    public DatosRequest modificarEstatusODS(String folioODS){
+    public DatosRequest modificarEstatusODS(String folioODS) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
         final QueryHelper q = new QueryHelper("UPDATE SVC_ORDEN_SERVICIO");
@@ -126,11 +126,12 @@ public class Salas {
         dr.setDatos(parametro);
         return dr;
     }
-    public DatosRequest registrarSalida(RegistrarEntradaSalaModel registrarEntrada, UsuarioDto user){
+
+    public DatosRequest registrarSalida(RegistrarEntradaSalaModel registrarEntrada, UsuarioDto user) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
         String canGas = Objects.isNull(registrarEntrada.getCantidadGasFinal()) ? null : registrarEntrada.getCantidadGasFinal();
-        String query = "UPDATE SVC_BITACORA_SALAS SET FEC_SALIDA = '" + registrarEntrada.getFechaSalida() + "' , TIM_HORA_SALIDA = '" + registrarEntrada.getHoraSalida() + "', CAN_GAS_FINAL = " + canGas  + ", FEC_ACTUALIZACION = NOW() , ID_USUARIO_MODIFICA = '" + user.getIdUsuario() + "' where ID_REGISTRO = " + registrarEntrada.getIdRegistro();
+        String query = "UPDATE SVC_BITACORA_SALAS SET FEC_SALIDA = '" + registrarEntrada.getFechaSalida() + "' , TIM_HORA_SALIDA = '" + registrarEntrada.getHoraSalida() + "', CAN_GAS_FINAL = " + canGas + ", FEC_ACTUALIZACION = NOW() , ID_USUARIO_MODIFICA = '" + user.getIdUsuario() + "' where ID_REGISTRO = " + registrarEntrada.getIdRegistro();
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
@@ -140,7 +141,7 @@ public class Salas {
     public DatosRequest verEstatusODS(String idODS) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String query = "SELECT SOS.CVE_ESTATUS FROM SVC_ORDEN_SERVICIO SOS WHERE SOS.ID_ORDEN_SERVICIO = " + idODS + "" ;
+        String query = "SELECT SOS.CVE_ESTATUS FROM SVC_ORDEN_SERVICIO SOS WHERE SOS.ID_ORDEN_SERVICIO = " + idODS + "";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
@@ -150,14 +151,14 @@ public class Salas {
     public DatosRequest verEstatusODSFolio(String cveFolio) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String query = "SELECT SOS.CVE_ESTATUS FROM SVC_ORDEN_SERVICIO SOS WHERE SOS.CVE_FOLIO = " + cveFolio + "" ;
+        String query = "SELECT SOS.CVE_ESTATUS FROM SVC_ORDEN_SERVICIO SOS WHERE SOS.CVE_FOLIO = " + cveFolio + "";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
         return dr;
     }
-    
-    public DatosRequest obtenerDatosContratanteFinado(String folioODS){
+
+    public DatosRequest obtenerDatosContratanteFinado(String folioODS) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
 
@@ -175,18 +176,18 @@ public class Salas {
                 "SOS.ID_ORDEN_SERVICIO = SF.ID_ORDEN_SERVICIO " +
                 "LEFT JOIN SVC_PERSONA SP2 ON SP2.ID_PERSONA = SF.ID_PERSONA  " +
                 "WHERE " +
-                "SOS.CVE_FOLIO = '" + folioODS +"'";
+                "SOS.CVE_FOLIO = '" + folioODS + "'";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
         return dr;
     }
-    
-    public DatosRequest consultarDetalle(DatosRequest request){
+
+    public DatosRequest consultarDetalle(DatosRequest request) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
         JsonParser parser = new JsonParser();
-        JsonObject jO =  (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
+        JsonObject jO = (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
         String fechaConsulta = String.valueOf(jO.get("fechaConsulta"));
         String idSala = String.valueOf(jO.get("idSala"));
         String query = "SELECT" +
@@ -222,11 +223,13 @@ public class Salas {
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
         return dr;
-    } public DatosRequest consultarPorMes(DatosRequest request){
+    }
+
+    public DatosRequest consultarPorMes(DatosRequest request) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
         JsonParser parser = new JsonParser();
-        JsonObject jO =  (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
+        JsonObject jO = (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
         String mesConsulta = String.valueOf(jO.get("mes"));
         String anioConsulta = String.valueOf(jO.get("anio"));
         String idTipoSala = String.valueOf(jO.get("tipoSala"));
@@ -265,17 +268,36 @@ public class Salas {
         return dr;
     }
 
-    public Map<String, Object> generarReporte(ReporteDto reporteDto){
+    public Map<String, Object> generarReporte(ReporteDto reporteDto) {
         Map<String, Object> envioDatos = new HashMap<>();
         envioDatos.put("condition", " AND SS.IND_TIPO_SALA = " + reporteDto.getIndTipoSala() + " AND SS.ID_VELATORIO = " + reporteDto.getIdVelatorio() +
                 " AND MONTH(SBS.FEC_ENTRADA) = " + reporteDto.getMes() + " AND YEAR (SBS.FEC_ENTRADA) = " + reporteDto.getAnio());
         envioDatos.put("rutaNombreReporte", reporteDto.getRutaNombreReporte());
         envioDatos.put("tipoReporte", reporteDto.getTipoReporte());
         envioDatos.put("idVelatorio", reporteDto.getIdVelatorio());
-        if(reporteDto.getTipoReporte().equals("xls")) {
+        if (reporteDto.getTipoReporte().equals("xls")) {
             envioDatos.put("IS_IGNORE_PAGINATION", true);
         }
         return envioDatos;
+    }
+
+    public DatosRequest consultaAlertas(DatosRequest request) {
+        DatosRequest dr = new DatosRequest();
+        Map<String, Object> parametro = new HashMap<>();
+        String query = "SELECT " +
+                "   SBS.ID_REGISTRO AS idRegistro, " +
+                "   IF(TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210,  " +
+                "   CONCAT('EN LA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.'),'')    " +
+                "   AS mensaje,    " +
+                "   'reservar-salas' AS path  " +
+                "FROM    " +
+                "   SVC_BITACORA_SALAS SBS  " +
+                "LEFT JOIN SVC_SALA SS ON  " +
+                "   SBS.ID_SALA = SS.ID_SALA ";
+        String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+        parametro.put(AppConstantes.QUERY, encoded);
+        dr.setDatos(parametro);
+        return dr;
     }
 
 }

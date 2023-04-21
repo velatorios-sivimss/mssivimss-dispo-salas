@@ -109,6 +109,16 @@ public class VerificarSalasController {
                 .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }
 
+    @CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+    @TimeLimiter(name = "msflujo")
+    @PostMapping("alertaSalas")
+    public CompletableFuture<?> alertaSalas(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+        Response<?> response = salas.consultaAlertas(request,authentication);
+        return CompletableFuture
+                .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+    }
+
     /**
      * fallbacks generico
      *
