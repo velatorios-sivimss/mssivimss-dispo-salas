@@ -17,9 +17,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Map;
+import java.util.logging.Level;
 
 @Service
 @Slf4j
@@ -31,6 +33,7 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     private String urlReportes;
     @Autowired
     private ProviderServiceRestTemplate providerRestTemplate;
+
     Gson json = new Gson();
 
     private static final String FOLIO_NO_EXISTE = "85"; // El número de folio no existe. Verifica tu información.
@@ -39,9 +42,37 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     private static final String REGISTRO_SALIDA = "83"; // Has registrado la salida/término del servicio correctamente.
     private static final String ERROR_GUARDADO = "5"; // Error al guardar la información. Intenta nuevamente.
 
+    @Autowired
+    private LogUtil logUtil;
+
+    private static final String ALTA = "alta";
+    private static final String BAJA = "baja";
+    private static final String MODIFICACION = "modificacion";
+    private static final String CONSULTA = "consulta";
+
+
+    @Override
+    public Response<?> consultaAlertas(DatosRequest request, Authentication authentication) throws IOException {
+        Response<?> response;
+        try {
+            logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Consulta de alertas", CONSULTA, authentication);
+            response = providerRestTemplate.consumirServicio(salas.consultaAlertas(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+                    authentication);
+            logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "todo correcto", CONSULTA, authentication);
+            return response;
+        } catch (Exception e) {
+            String consulta = salas.consultaAlertas(request).getDatos().get(AppConstantes.QUERY).toString();
+            String decoded = new String(DatatypeConverter.parseBase64Binary(consulta));
+            log.error("Error al ejecutar el query " + decoded);
+            logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Fallo al ejecutar el query: " + decoded, CONSULTA, authentication);
+            throw new IOException("52", e.getCause());
+        }
+
+    }
+
     @Override
     public Response<?> buscarSalasPorVelatorio(DatosRequest request, Authentication authentication) throws IOException {
-        LogUtil.crearArchivoLog("info","VerificarSalasServiceImpl",System.getProperty("user.dir"),"esta es una prueba de salto de renglon");
+        logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "busqueda salas", CONSULTA, authentication);
         return providerRestTemplate.consumirServicio(salas.buscarSalas(request).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
     }
@@ -50,22 +81,22 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     public Response<?> registrarEntrada(DatosRequest request, Authentication authentication) throws IOException {
         RegistrarEntradaSalaModel registroEntrada = json.fromJson(String.valueOf(request.getDatos().get(AppConstantes.DATOS)), RegistrarEntradaSalaModel.class);
         UsuarioDto usuarioDto = json.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
-       if(registroEntrada.getIdTipoOcupacion() == 2){
-           if(validarEstatusODS(String.valueOf(registroEntrada.getIdOds()), authentication)){
-               Response<?> response = providerRestTemplate.consumirServicio(salas.registrarEntrada(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication);
-               if (response.getCodigo() == 200) {
-                   providerRestTemplate.consumirServicio(salas.modificarEstatusSala(registroEntrada.getIdTipoOcupacion(), registroEntrada.getIdSala(),"Entrada").getDatos(),
-                           urlDominioConsulta + "/generico/actualizar", authentication);
-                   providerRestTemplate.consumirServicio(salas.modificarEstatusODS(String.valueOf(registroEntrada.getIdOds())).getDatos(),
-                           urlDominioConsulta + "/generico/actualizar", authentication);
-                   return MensajeResponseUtil.mensajeResponse(response,REGISTRO_CORRECTO);
-               } else {
-                   MensajeResponseUtil.mensajeResponse(response,ERROR_GUARDADO);
-               }
-           }
-           return MensajeResponseUtil.mensajeResponse(new Response<>(false,HttpStatus.OK.value(),"ODS con el ID " + registroEntrada.getIdOds() + " No tiene estatus generado o en transito"),ERROR_GUARDADO);
-       }
-        return MensajeResponseUtil.mensajeResponse(providerRestTemplate.consumirServicio(salas.registrarEntrada(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication),REGISTRO_CORRECTO);
+        if (registroEntrada.getIdTipoOcupacion() == 2) {
+            if (validarEstatusODS(String.valueOf(registroEntrada.getIdOds()), authentication)) {
+                Response<?> response = providerRestTemplate.consumirServicio(salas.registrarEntrada(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication);
+                if (response.getCodigo() == 200) {
+                    providerRestTemplate.consumirServicio(salas.modificarEstatusSala(registroEntrada.getIdTipoOcupacion(), registroEntrada.getIdSala(), "Entrada").getDatos(),
+                            urlDominioConsulta + "/generico/actualizar", authentication);
+                    providerRestTemplate.consumirServicio(salas.modificarEstatusODS(String.valueOf(registroEntrada.getIdOds())).getDatos(),
+                            urlDominioConsulta + "/generico/actualizar", authentication);
+                    return MensajeResponseUtil.mensajeResponse(response, REGISTRO_CORRECTO);
+                } else {
+                    MensajeResponseUtil.mensajeResponse(response, ERROR_GUARDADO);
+                }
+            }
+            return MensajeResponseUtil.mensajeResponse(new Response<>(false, HttpStatus.OK.value(), "ODS con el ID " + registroEntrada.getIdOds() + " No tiene estatus generado o en transito"), ERROR_GUARDADO);
+        }
+        return MensajeResponseUtil.mensajeResponse(providerRestTemplate.consumirServicio(salas.registrarEntrada(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication), REGISTRO_CORRECTO);
     }
 
     @Override
@@ -73,19 +104,19 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
         RegistrarEntradaSalaModel registroEntrada = json.fromJson(String.valueOf(request.getDatos().get(AppConstantes.DATOS)), RegistrarEntradaSalaModel.class);
         UsuarioDto usuarioDto = json.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
         Response<?> response = providerRestTemplate.consumirServicio(salas.registrarSalida(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication);
-        return MensajeResponseUtil.mensajeResponse(response,REGISTRO_SALIDA);
+        return MensajeResponseUtil.mensajeResponse(response, REGISTRO_SALIDA);
     }
 
     @Override
     public Response<?> consultaContratante(DatosRequest request, Authentication authentication) throws IOException {
         JsonParser parser = new JsonParser();
-        JsonObject jO =  (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
+        JsonObject jO = (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
         String folioODS = String.valueOf(jO.get("folioODS"));
-        if(validarEstatusODSFolio(folioODS, authentication)){
-        return providerRestTemplate.consumirServicio(salas.obtenerDatosContratanteFinado(folioODS).getDatos(), urlDominioConsulta + "/generico/consulta",
-                authentication);
-        }else{
-            return MensajeResponseUtil.mensajeResponse(new Response<>(false,HttpStatus.OK.value(),"ODS con el ID " +folioODS + " No tiene estatus generado o en transito"),ERROR_GUARDADO);
+        if (validarEstatusODSFolio(folioODS, authentication)) {
+            return providerRestTemplate.consumirServicio(salas.obtenerDatosContratanteFinado(folioODS).getDatos(), urlDominioConsulta + "/generico/consulta",
+                    authentication);
+        } else {
+            return MensajeResponseUtil.mensajeResponse(new Response<>(false, HttpStatus.OK.value(), "ODS con el ID " + folioODS + " No tiene estatus generado o en transito"), ERROR_GUARDADO);
         }
 
     }
@@ -103,29 +134,23 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
                 authentication);
     }
 
-    @Override
-    public Response<?> consultaAlertas(DatosRequest request, Authentication authentication) throws IOException {
-        LogUtil.crearArchivoLog("info","VerificarSalasServiceImpl",System.getProperty("user.dir"),"consultandoAlertas");
-        return providerRestTemplate.consumirServicio(salas.consultaAlertas(request).getDatos(), urlDominioConsulta + "/generico/consulta",
-                authentication);
-    }
 
     @Override
     public Response<?> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException, ParseException {
         String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-        ReporteDto reporteDto= json.fromJson(datosJson, ReporteDto.class);
-        if(reporteDto.getAnio()==null || reporteDto.getMes()==null || reporteDto.getIdVelatorio()==null) {
+        ReporteDto reporteDto = json.fromJson(datosJson, ReporteDto.class);
+        if (reporteDto.getAnio() == null || reporteDto.getMes() == null || reporteDto.getIdVelatorio() == null) {
             throw new BadRequestException(HttpStatus.BAD_REQUEST, "Falta infomación");
         }
         Map<String, Object> envioDatos = new Salas().generarReporte(reporteDto);
-        return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes ,
+        return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes,
                 authentication);
     }
 
     public Boolean validarEstatusODS(String idODS, Authentication authentication) throws IOException {
         Response<?> respuesta = providerRestTemplate.consumirServicio(salas.verEstatusODS(idODS).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
-        if(respuesta.getDatos().toString().contains("CVE_ESTATUS=2") || respuesta.getDatos().toString().contains("CVE_ESTATUS=3")){
+        if (respuesta.getDatos().toString().contains("CVE_ESTATUS=2") || respuesta.getDatos().toString().contains("CVE_ESTATUS=3")) {
             return true;
         }
         return false;
@@ -134,7 +159,7 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     public Boolean validarEstatusODSFolio(String idODS, Authentication authentication) throws IOException {
         Response<?> respuesta = providerRestTemplate.consumirServicio(salas.verEstatusODSFolio(idODS).getDatos(), urlDominioConsulta + "/generico/consulta",
                 authentication);
-        if(respuesta.getDatos().toString().contains("CVE_ESTATUS=2") || respuesta.getDatos().toString().contains("CVE_ESTATUS=3")){
+        if (respuesta.getDatos().toString().contains("CVE_ESTATUS=2") || respuesta.getDatos().toString().contains("CVE_ESTATUS=3")) {
             return true;
         }
         return false;

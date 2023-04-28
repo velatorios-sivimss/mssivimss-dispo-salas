@@ -88,7 +88,7 @@ public class Salas {
     }
 
     public DatosRequest modificarEstatusSala(int idTipoOcupacion, int idSala, String movimiento) {
-        if (movimiento == "Entrada") {
+        if (movimiento.equals("Entrada")) {
             DatosRequest dr = new DatosRequest();
             Map<String, Object> parametro = new HashMap<>();
             final QueryHelper q = new QueryHelper("UPDATE SVC_SALA");
@@ -294,6 +294,17 @@ public class Salas {
                 "   SVC_BITACORA_SALAS SBS  " +
                 "LEFT JOIN SVC_SALA SS ON  " +
                 "   SBS.ID_SALA = SS.ID_SALA ";
+        String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+        parametro.put(AppConstantes.QUERY, encoded);
+        dr.setDatos(parametro);
+        return dr;
+    }
+
+    public DatosRequest renovarSalida(RegistrarEntradaSalaModel registrarEntrada, UsuarioDto user) {
+        DatosRequest dr = new DatosRequest();
+        Map<String, Object> parametro = new HashMap<>();
+        String canGas = Objects.isNull(registrarEntrada.getCantidadGasFinal()) ? null : registrarEntrada.getCantidadGasFinal();
+        String query = "UPDATE SVC_BITACORA_SALAS SET TIM_RENOVACION = NOW()"  + " where ID_REGISTRO = " + registrarEntrada.getIdRegistro();
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
