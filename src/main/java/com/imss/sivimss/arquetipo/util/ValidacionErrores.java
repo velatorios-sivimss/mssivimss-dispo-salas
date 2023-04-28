@@ -5,13 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
-/**
- * Clase ValidacionErrores para regresar la respuesta de las excepeciones, cuando se valida las propiedades del dto
- *
- * @author Pablo Nolasco
- * @puesto dev
- * @date abril. 2023
- */
+ 
 public class ValidacionErrores {
 
 	private Map<String, String> errores;

@@ -3,13 +3,6 @@ package com.imss.sivimss.arquetipo.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-/**
- * Clase principal para manejar las excepciones ResourceNotFoundException de la aplicacion
- *
- * @author Pablo Nolasco
- * @puesto dev
- * @date abril. 2023
- */
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException{
 
