@@ -71,6 +71,16 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     }
 
     @Override
+    public Response<?> renovarEntrada(DatosRequest request, Authentication authentication) throws IOException {
+        JsonParser parser = new JsonParser();
+        JsonObject jO = (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
+        String idRegistro = String.valueOf(jO.get("idRegistro"));
+        Response<?> response = providerRestTemplate.consumirServicio(salas.renovarSalida(idRegistro).getDatos(), urlDominioConsulta + "/generico/consulta",
+                authentication);
+        return response;
+    }
+
+    @Override
     public Response<?> buscarSalasPorVelatorio(DatosRequest request, Authentication authentication) throws IOException {
        // logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "busqueda salas", CONSULTA, authentication);
         try{

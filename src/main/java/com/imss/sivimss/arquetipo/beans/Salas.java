@@ -79,7 +79,7 @@ public class Salas {
         query.agregarParametroValues("CAN_GAS_INICIAL", registrarEntrada.getCantidadGasInicial());
         query.agregarParametroValues("DESC_MANTENIMIENTO", "'" + registrarEntrada.getDescripcionMantenimiento() + "'");
         query.agregarParametroValues("NOM_RESPONSABLE", "'" + nombreResponsable + "'");
-        query.agregarParametroValues("CVE_ESTATUS", "1");
+        query.agregarParametroValues("IND_ACTIVO", "1");
         query.agregarParametroValues("ID_USUARIO_ALTA", String.valueOf(user.getIdUsuario()));
         String qr = query.obtenerQueryInsertar();
         String encoded = DatatypeConverter.printBase64Binary(qr.getBytes());
@@ -286,26 +286,33 @@ public class Salas {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
         String query = "SELECT " +
-                "   SBS.ID_REGISTRO AS idRegistro, " +
-                "   IF(TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210,  " +
-                "   CONCAT('EN LA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.'),'')    " +
-                "   AS mensaje,    " +
-                "   'reservar-salas' AS path  " +
-                "FROM    " +
-                "   SVC_BITACORA_SALAS SBS  " +
-                "LEFT JOIN SVC_SALA SS ON  " +
-                "   SBS.ID_SALA = SS.ID_SALA ";
+                "  SBS.ID_REGISTRO AS idRegistro, " +
+                "  CASE  " +
+                "    WHEN TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210  " +
+                "  AND SBS.TIM_HORA_SALIDA IS NULL " +
+                "  AND SBS.TIM_RENOVACION IS NULL " +
+                "  THEN CONCAT('EN LA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.') " +
+                "  WHEN SBS.TIM_RENOVACION  IS NOT NULL " +
+                "  AND TIMESTAMPDIFF(MINUTE, SBS.TIM_RENOVACION, NOW()) >= 210 " +
+                "  THEN CONCAT('EN LA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.') " +
+                "  END  " +
+                "  mensaje " +
+                "  , " +
+                "  'RESERVAR-SALAS' AS PATH " +
+                "FROM " +
+                "  SVC_BITACORA_SALAS SBS " +
+                "LEFT JOIN SVC_SALA SS ON " +
+                "  SBS.ID_SALA = SS.ID_SALA ";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
         return dr;
     }
 
-    public DatosRequest renovarSalida(RegistrarEntradaSalaModel registrarEntrada, UsuarioDto user) {
+    public DatosRequest renovarSalida(String idRegistro) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String canGas = Objects.isNull(registrarEntrada.getCantidadGasFinal()) ? null : registrarEntrada.getCantidadGasFinal();
-        String query = "UPDATE SVC_BITACORA_SALAS SET TIM_RENOVACION = NOW()"  + " WHERE ID_REGISTRO = " + registrarEntrada.getIdRegistro();
+        String query = "UPDATE SVC_BITACORA_SALAS SET TIM_RENOVACION = NOW()"  + " WHERE ID_REGISTRO = " + idRegistro;
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
