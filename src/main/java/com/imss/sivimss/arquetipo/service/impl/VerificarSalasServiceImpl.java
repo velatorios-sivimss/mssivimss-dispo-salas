@@ -55,16 +55,16 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     public Response<?> consultaAlertas(DatosRequest request, Authentication authentication) throws IOException {
         Response<?> response;
         try {
-            logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Consulta de alertas", CONSULTA, authentication);
+           // logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Consulta de alertas", CONSULTA, authentication);
             response = providerRestTemplate.consumirServicio(salas.consultaAlertas(request).getDatos(), urlDominioConsulta + "/generico/consulta",
                     authentication);
-            logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "todo correcto", CONSULTA, authentication);
+            //logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "todo correcto", CONSULTA, authentication);
             return response;
         } catch (Exception e) {
             String consulta = salas.consultaAlertas(request).getDatos().get(AppConstantes.QUERY).toString();
             String decoded = new String(DatatypeConverter.parseBase64Binary(consulta));
             log.error("Error al ejecutar el query " + decoded);
-            logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Fallo al ejecutar el query: " + decoded, CONSULTA, authentication);
+            //logUtil.crearArchivoLog(Level.WARNING.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Fallo al ejecutar el query: " + decoded, CONSULTA, authentication);
             throw new IOException("52", e.getCause());
         }
 
@@ -72,9 +72,15 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
 
     @Override
     public Response<?> buscarSalasPorVelatorio(DatosRequest request, Authentication authentication) throws IOException {
-        logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "busqueda salas", CONSULTA, authentication);
-        return providerRestTemplate.consumirServicio(salas.buscarSalas(request).getDatos(), urlDominioConsulta + "/generico/consulta",
-                authentication);
+       // logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "busqueda salas", CONSULTA, authentication);
+        try{
+            Response<?> response = providerRestTemplate.consumirServicio(salas.buscarSalas(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+                    authentication);
+            return  response;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

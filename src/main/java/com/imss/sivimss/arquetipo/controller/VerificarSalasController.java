@@ -149,7 +149,7 @@ public class VerificarSalasController {
     private CompletableFuture<?> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
                                                   CallNotPermittedException e) throws IOException {
         Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
-        logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", CONSULTA, authentication);
+        //logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", CONSULTA, authentication);
         return CompletableFuture
                 .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }
@@ -157,7 +157,7 @@ public class VerificarSalasController {
     private CompletableFuture<?> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
                                                   RuntimeException e) throws IOException {
         Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
-        logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", CONSULTA, authentication);
+       // logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", CONSULTA, authentication);
         return CompletableFuture
                 .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }
@@ -165,7 +165,7 @@ public class VerificarSalasController {
     private CompletableFuture<?> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
                                                   NumberFormatException e) throws IOException {
         Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
-        logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", CONSULTA, authentication);
+       // logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", CONSULTA, authentication);
         return CompletableFuture
                 .supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
     }

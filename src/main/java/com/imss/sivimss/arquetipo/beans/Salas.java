@@ -35,7 +35,7 @@ public class Salas {
                 "S.ID_SALA AS idSala, " +
                 "S.NOM_SALA AS nombreSala, " +
                 "BS.FEC_ENTRADA fechaEntrada, " +
-                "bs.TIM_HORA_ENTRADA AS horaEntrada,  " +
+                "BS.TIM_HORA_ENTRADA AS horaEntrada,  " +
                 "CASE " +
                 "WHEN BS.FEC_ENTRADA = CURDATE() " +
                 "AND BS.ID_TIPO_OCUPACION = 1 " +
@@ -62,6 +62,7 @@ public class Salas {
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
+        log.info("dr " + dr );
         return dr;
     }
 
@@ -304,7 +305,7 @@ public class Salas {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
         String canGas = Objects.isNull(registrarEntrada.getCantidadGasFinal()) ? null : registrarEntrada.getCantidadGasFinal();
-        String query = "UPDATE SVC_BITACORA_SALAS SET TIM_RENOVACION = NOW()"  + " where ID_REGISTRO = " + registrarEntrada.getIdRegistro();
+        String query = "UPDATE SVC_BITACORA_SALAS SET TIM_RENOVACION = NOW()"  + " WHERE ID_REGISTRO = " + registrarEntrada.getIdRegistro();
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
