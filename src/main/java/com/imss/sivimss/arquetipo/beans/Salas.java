@@ -94,7 +94,7 @@ public class Salas {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
         final QueryHelper q = new QueryHelper("UPDATE SVC_ORDEN_SERVICIO");
-        q.agregarParametroValues("CVE_ESTATUS", "3");
+        q.agregarParametroValues("ID_ESTATUS_ORDEN_SERVICIO", "3");
         q.addWhere("ID_ORDEN_SERVICIO = " + folioODS);
         String query = q.obtenerQueryActualizar();
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
