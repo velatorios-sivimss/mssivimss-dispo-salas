@@ -238,7 +238,7 @@ public class Salas {
         String query = "SELECT " +
                 "   SS.ID_SALA AS idSala, " +
                 "   SS.NOM_SALA AS nombreSala, " +
-                "   SS.IND_DISPONIBILIDAD AS indDisponibilidad, " +
+                "   SS.ID_DISPONIBILIDAD AS indDisponibilidad, " +
                 "   CASE " +
                 "      WHEN SBS.FEC_ENTRADA = CURDATE() " +
                 "      AND SBS.ID_TIPO_OCUPACION = 1 " +
@@ -288,6 +288,8 @@ public class Salas {
         String query = "SELECT  " +
                 "  SBS.ID_REGISTRO AS idRegistro,  " +
                 "  SS.IND_TIPO_SALA AS indTipoSala,  " +
+                "  SBS.ID_SALA, AS idSala,  " +
+                "  SS.NOM_SALA, AS nombreSala,  " +
                 "  IFNULL(  " +
                 "  CASE   " +
                 "    WHEN TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210   " +
