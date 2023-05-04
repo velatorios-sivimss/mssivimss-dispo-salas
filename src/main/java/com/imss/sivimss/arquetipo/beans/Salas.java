@@ -288,8 +288,8 @@ public class Salas {
         String query = "SELECT  " +
                 "  SBS.ID_REGISTRO AS idRegistro,  " +
                 "  SS.IND_TIPO_SALA AS indTipoSala,  " +
-                "  SBS.ID_SALA, AS idSala,  " +
-                "  SS.NOM_SALA, AS nombreSala,  " +
+                "  SBS.ID_SALA AS idSala,  " +
+                "  SS.NOM_SALA AS nombreSala,  " +
                 "  IFNULL(  " +
                 "  CASE   " +
                 "    WHEN TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210   " +
