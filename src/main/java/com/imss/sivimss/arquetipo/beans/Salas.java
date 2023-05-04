@@ -35,7 +35,7 @@ public class Salas {
                 "S.ID_SALA AS idSala, " +
                 "S.NOM_SALA AS nombreSala, " +
                 "BS.FEC_ENTRADA fechaEntrada, " +
-                "bs.TIM_HORA_ENTRADA AS horaEntrada,  " +
+                "BS.TIM_HORA_ENTRADA AS horaEntrada,  " +
                 "CASE " +
                 "WHEN BS.FEC_ENTRADA = CURDATE() " +
                 "AND BS.ID_TIPO_OCUPACION = 1 " +
@@ -62,6 +62,7 @@ public class Salas {
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
+        log.info("dr " + dr );
         return dr;
     }
 
@@ -78,7 +79,7 @@ public class Salas {
         query.agregarParametroValues("CAN_GAS_INICIAL", registrarEntrada.getCantidadGasInicial());
         query.agregarParametroValues("DESC_MANTENIMIENTO", "'" + registrarEntrada.getDescripcionMantenimiento() + "'");
         query.agregarParametroValues("NOM_RESPONSABLE", "'" + nombreResponsable + "'");
-        query.agregarParametroValues("CVE_ESTATUS", "1");
+        query.agregarParametroValues("IND_ACTIVO", "1");
         query.agregarParametroValues("ID_USUARIO_ALTA", String.valueOf(user.getIdUsuario()));
         String qr = query.obtenerQueryInsertar();
         String encoded = DatatypeConverter.printBase64Binary(qr.getBytes());
@@ -141,7 +142,7 @@ public class Salas {
     public DatosRequest verEstatusODS(String idODS) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String query = "SELECT SOS.CVE_ESTATUS FROM SVC_ORDEN_SERVICIO SOS WHERE SOS.ID_ORDEN_SERVICIO = " + idODS + "";
+        String query = "SELECT SOS.ID_ESTATUS_ORDEN_SERVICIO FROM SVC_ORDEN_SERVICIO SOS WHERE SOS.ID_ORDEN_SERVICIO = " + idODS + "";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
@@ -284,27 +285,37 @@ public class Salas {
     public DatosRequest consultaAlertas(DatosRequest request) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String query = "SELECT " +
-                "   SBS.ID_REGISTRO AS idRegistro, " +
-                "   IF(TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210,  " +
-                "   CONCAT('EN LA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.'),'')    " +
-                "   AS mensaje,    " +
-                "   'reservar-salas' AS path  " +
-                "FROM    " +
-                "   SVC_BITACORA_SALAS SBS  " +
+        String query = "SELECT  " +
+                "  SBS.ID_REGISTRO AS idRegistro,  " +
+                "  SS.IND_TIPO_SALA AS indTipoSala,  " +
+                "  IFNULL(  " +
+                "  CASE   " +
+                "    WHEN TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210   " +
+                "  AND SBS.TIM_HORA_SALIDA IS NULL  " +
+                "  AND SBS.TIM_RENOVACION IS NULL  " +
+                "  THEN CONCAT('EN LA SALA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.')  " +
+                "  WHEN SBS.TIM_RENOVACION  IS NOT NULL  " +
+                "  AND TIMESTAMPDIFF(MINUTE, SBS.TIM_RENOVACION, NOW()) >= 210  " +
+                "  THEN CONCAT('EN LA SALA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.')  " +
+                "  END   " +
+                "   , '')  " +
+                "  mensaje  " +
+                "  ,  " +
+                "  'RESERVAR-SALAS' AS path  " +
+                "FROM  " +
+                "  SVC_BITACORA_SALAS SBS   " +
                 "LEFT JOIN SVC_SALA SS ON  " +
-                "   SBS.ID_SALA = SS.ID_SALA ";
+                "  SBS.ID_SALA = SS.ID_SALA";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
         return dr;
     }
 
-    public DatosRequest renovarSalida(RegistrarEntradaSalaModel registrarEntrada, UsuarioDto user) {
+    public DatosRequest renovarSalida(String idRegistro) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String canGas = Objects.isNull(registrarEntrada.getCantidadGasFinal()) ? null : registrarEntrada.getCantidadGasFinal();
-        String query = "UPDATE SVC_BITACORA_SALAS SET TIM_RENOVACION = NOW()"  + " where ID_REGISTRO = " + registrarEntrada.getIdRegistro();
+        String query = "UPDATE SVC_BITACORA_SALAS SET TIM_RENOVACION = NOW()"  + " WHERE ID_REGISTRO = " + idRegistro;
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
