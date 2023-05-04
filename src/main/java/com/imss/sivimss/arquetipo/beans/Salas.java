@@ -238,7 +238,7 @@ public class Salas {
         String query = "SELECT " +
                 "   SS.ID_SALA AS idSala, " +
                 "   SS.NOM_SALA AS nombreSala, " +
-                "   SS.IND_DISPONIBILIDAD AS indDisponibilidad, " +
+                "   SS.ID_DISPONIBILIDAD AS indDisponibilidad, " +
                 "   CASE " +
                 "      WHEN SBS.FEC_ENTRADA = CURDATE() " +
                 "      AND SBS.ID_TIPO_OCUPACION = 1 " +
@@ -288,6 +288,15 @@ public class Salas {
         String query = "SELECT  " +
                 "  SBS.ID_REGISTRO AS idRegistro,  " +
                 "  SS.IND_TIPO_SALA AS indTipoSala,  " +
+                "  SBS.ID_SALA AS idSala,  " +
+                "  SS.NOM_SALA AS nombreSala,  " +
+                "  CASE  " +
+                "  WHEN SBS.ID_TIPO_OCUPACION = 1  " +
+                "  THEN 'MANTENIMIENTO'  " +
+                "  WHEN SBS.ID_TIPO_OCUPACION = 2  " +
+                "  THEN 'SERVICIO ODS'  " +
+                "  END  " +
+                "  usoSala,  " +
                 "  IFNULL(  " +
                 "  CASE   " +
                 "    WHEN TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210   " +
@@ -301,7 +310,7 @@ public class Salas {
                 "   , '')  " +
                 "  mensaje  " +
                 "  ,  " +
-                "  'RESERVAR-SALAS' AS path  " +
+                "  'reservar-salas' AS path  " +
                 "FROM  " +
                 "  SVC_BITACORA_SALAS SBS   " +
                 "LEFT JOIN SVC_SALA SS ON  " +
