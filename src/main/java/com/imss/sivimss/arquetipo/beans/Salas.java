@@ -142,7 +142,7 @@ public class Salas {
     public DatosRequest verEstatusODS(String idODS) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String query = "SELECT SOS.CVE_ESTATUS FROM SVC_ORDEN_SERVICIO SOS WHERE SOS.ID_ORDEN_SERVICIO = " + idODS + "";
+        String query = "SELECT SOS.ID_ESTATUS_ORDEN_SERVICIO FROM SVC_ORDEN_SERVICIO SOS WHERE SOS.ID_ORDEN_SERVICIO = " + idODS + "";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
@@ -285,24 +285,27 @@ public class Salas {
     public DatosRequest consultaAlertas(DatosRequest request) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String query = "SELECT " +
-                "  SBS.ID_REGISTRO AS idRegistro, " +
-                "  CASE  " +
-                "    WHEN TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210  " +
-                "  AND SBS.TIM_HORA_SALIDA IS NULL " +
-                "  AND SBS.TIM_RENOVACION IS NULL " +
-                "  THEN CONCAT('EN LA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.') " +
-                "  WHEN SBS.TIM_RENOVACION  IS NOT NULL " +
-                "  AND TIMESTAMPDIFF(MINUTE, SBS.TIM_RENOVACION, NOW()) >= 210 " +
-                "  THEN CONCAT('EN LA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.') " +
-                "  END  " +
-                "  mensaje " +
-                "  , " +
-                "  'RESERVAR-SALAS' AS PATH " +
-                "FROM " +
-                "  SVC_BITACORA_SALAS SBS " +
-                "LEFT JOIN SVC_SALA SS ON " +
-                "  SBS.ID_SALA = SS.ID_SALA ";
+        String query = "SELECT  " +
+                "  SBS.ID_REGISTRO AS idRegistro,  " +
+                "  SS.IND_TIPO_SALA AS indTipoSala,  " +
+                "  IFNULL(  " +
+                "  CASE   " +
+                "    WHEN TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210   " +
+                "  AND SBS.TIM_HORA_SALIDA IS NULL  " +
+                "  AND SBS.TIM_RENOVACION IS NULL  " +
+                "  THEN CONCAT('EN LA SALA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.')  " +
+                "  WHEN SBS.TIM_RENOVACION  IS NOT NULL  " +
+                "  AND TIMESTAMPDIFF(MINUTE, SBS.TIM_RENOVACION, NOW()) >= 210  " +
+                "  THEN CONCAT('EN LA SALA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.')  " +
+                "  END   " +
+                "   , '')  " +
+                "  mensaje  " +
+                "  ,  " +
+                "  'RESERVAR-SALAS' AS path  " +
+                "FROM  " +
+                "  SVC_BITACORA_SALAS SBS   " +
+                "LEFT JOIN SVC_SALA SS ON  " +
+                "  SBS.ID_SALA = SS.ID_SALA";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
