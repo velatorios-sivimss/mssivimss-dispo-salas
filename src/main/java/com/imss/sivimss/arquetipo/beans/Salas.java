@@ -88,32 +88,7 @@ public class Salas {
         return dr;
     }
 
-    public DatosRequest modificarEstatusSala(int idTipoOcupacion, int idSala, String movimiento) {
-        if (movimiento.equals("Entrada")) {
-            DatosRequest dr = new DatosRequest();
-            Map<String, Object> parametro = new HashMap<>();
-            final QueryHelper q = new QueryHelper("UPDATE SVC_SALA");
-            q.agregarParametroValues("IND_DISPONIBILIDAD", idTipoOcupacion > 1 ? "2" : "3");
-            q.addWhere("ID_SALA = " + idSala);
-            String query = q.obtenerQueryActualizar();
-            String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
-            parametro.put(AppConstantes.QUERY, encoded);
-            dr.setDatos(parametro);
-            return dr;
-        } else {
-            DatosRequest dr = new DatosRequest();
-            Map<String, Object> parametro = new HashMap<>();
-            final QueryHelper q = new QueryHelper("UPDATE SVC_SALA");
-            q.agregarParametroValues("IND_DISPONIBILIDAD", "1");
-            q.addWhere("ID_SALA = " + idSala);
-            String query = q.obtenerQueryActualizar();
-            String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
-            parametro.put(AppConstantes.QUERY, encoded);
-            dr.setDatos(parametro);
-            return dr;
-        }
 
-    }
 
     public DatosRequest modificarEstatusODS(String folioODS) {
         DatosRequest dr = new DatosRequest();

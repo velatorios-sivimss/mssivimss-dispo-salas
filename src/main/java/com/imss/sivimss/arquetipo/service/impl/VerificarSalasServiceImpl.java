@@ -101,8 +101,6 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
             if (validarEstatusODS(String.valueOf(registroEntrada.getIdOds()), authentication)) {
                 Response<?> response = providerRestTemplate.consumirServicio(salas.registrarEntrada(registroEntrada, usuarioDto).getDatos(), urlDominioConsulta + "/generico/crear", authentication);
                 if (response.getCodigo() == 200) {
-                    providerRestTemplate.consumirServicio(salas.modificarEstatusSala(registroEntrada.getIdTipoOcupacion(), registroEntrada.getIdSala(), "Entrada").getDatos(),
-                            urlDominioConsulta + "/generico/actualizar", authentication);
                     providerRestTemplate.consumirServicio(salas.modificarEstatusODS(String.valueOf(registroEntrada.getIdOds())).getDatos(),
                             urlDominioConsulta + "/generico/actualizar", authentication);
                     return MensajeResponseUtil.mensajeResponse(response, REGISTRO_CORRECTO);
