@@ -132,7 +132,7 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
             return providerRestTemplate.consumirServicio(salas.obtenerDatosContratanteFinado(folioODS).getDatos(), urlDominioConsulta + "/generico/consulta",
                     authentication);
         } else {
-            return MensajeResponseUtil.mensajeResponse(new Response<>(false, HttpStatus.OK.value(), "ODS con el ID " + folioODS + " No tiene estatus generado o en transito"), ERROR_GUARDADO);
+            return MensajeResponseUtil.mensajeResponse(new Response<>(false, HttpStatus.OK.value(), "85"), FOLIO_NO_EXISTE);
         }
 
     }
