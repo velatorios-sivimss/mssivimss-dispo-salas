@@ -237,7 +237,7 @@ public class Salas {
                 "   AND YEAR (SBS.FEC_ENTRADA) = " + anioConsulta +
                 "   AND SS.ID_VELATORIO = " + idVelatorio +
                 "   AND SS.IND_TIPO_SALA = " + idTipoSala +
-                "   GROUP BY SS.ID_SALA";
+                "   GROUP BY SS.ID_SALA , SBS.FEC_ENTRADA";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
