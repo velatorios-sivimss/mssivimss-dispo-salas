@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -257,7 +258,7 @@ public class Salas {
         return envioDatos;
     }
 
-    public DatosRequest consultaAlertas(DatosRequest request) {
+    public DatosRequest consultaAlertas(DatosRequest request) throws UnsupportedEncodingException {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
         String query = "SELECT  " +
@@ -277,10 +278,10 @@ public class Salas {
                 "    WHEN TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210   " +
                 "  AND SBS.TIM_HORA_SALIDA IS NULL  " +
                 "  AND SBS.TIM_RENOVACION IS NULL  " +
-                "  THEN CONCAT('EN LA SALA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.')  " +
+                "  THEN CONCAT('En la sala ' , SS.NOM_SALA, ' el tiempo de atención del servicio ha excedido de las 3 horas y media, te recordamos que debes registrar la fecha y hora del término del servicio.')  " +
                 "  WHEN SBS.TIM_RENOVACION  IS NOT NULL  " +
                 "  AND TIMESTAMPDIFF(MINUTE, SBS.TIM_RENOVACION, NOW()) >= 210  " +
-                "  THEN CONCAT('EN LA SALA ' , SS.NOM_SALA, ' EL TIEMPO DE ATENCIÓN DEL SERVICIO HA EXCEDIDO DE LAS 3 HORAS Y MEDIA, TE RECORDAMOS QUE DEBES REGISTRAR LA FECHA Y HORA DEL TÉRMINO DEL SERVICIO.')  " +
+                "  THEN CONCAT('En la sala ' , SS.NOM_SALA, ' el tiempo de atención del servicio ha excedido de las 3 horas y media, te recordamos que debes registrar la fecha y hora del término del servicio.')  " +
                 "  END   " +
                 "   , '')  " +
                 "  mensaje  " +
@@ -290,7 +291,7 @@ public class Salas {
                 "  SVC_BITACORA_SALAS SBS   " +
                 "LEFT JOIN SVC_SALA SS ON  " +
                 "  SBS.ID_SALA = SS.ID_SALA";
-        String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+        String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
         return dr;
