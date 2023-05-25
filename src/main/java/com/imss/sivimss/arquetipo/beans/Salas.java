@@ -34,7 +34,7 @@ public class Salas {
         String query = "SELECT " +
                 "BS.ID_REGISTRO as idRegistro, " +
                 "S.ID_SALA AS idSala, " +
-                "S.NOM_SALA AS nombreSala, " +
+                "S.DES_SALA AS nombreSala, " +
                 "BS.FEC_ENTRADA fechaEntrada, " +
                 "BS.TIM_HORA_ENTRADA AS horaEntrada,  " +
                 "CASE " +
@@ -63,7 +63,6 @@ public class Salas {
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
-        log.info("dr " + dr );
         return dr;
     }
 
@@ -78,7 +77,7 @@ public class Salas {
         query.agregarParametroValues("FEC_ENTRADA", "'" + registrarEntrada.getFechaEntrada() + "'");
         query.agregarParametroValues("TIM_HORA_ENTRADA", "'" + registrarEntrada.getHoraEntrada() + "'");
         query.agregarParametroValues("CAN_GAS_INICIAL", registrarEntrada.getCantidadGasInicial());
-        query.agregarParametroValues("DESC_MANTENIMIENTO", "'" + registrarEntrada.getDescripcionMantenimiento() + "'");
+        query.agregarParametroValues("DES_MANTENIMIENTO", "'" + registrarEntrada.getDescripcionMantenimiento() + "'");
         query.agregarParametroValues("NOM_RESPONSABLE", "'" + nombreResponsable + "'");
         query.agregarParametroValues("IND_ACTIVO", "1");
         query.agregarParametroValues("ID_USUARIO_ALTA", String.valueOf(user.getIdUsuario()));
@@ -170,7 +169,7 @@ public class Salas {
         String query = "SELECT" +
                 " SBS.ID_REGISTRO AS idRegistro," +
                 " SBS.ID_SALA AS idSala," +
-                " SS.NOM_SALA AS nombreSala," +
+                " SS.DES_SALA AS nombreSala," +
                 " SBS.TIM_HORA_ENTRADA AS horaEntrada," +
                 " IFNULL(SBS.TIM_HORA_SALIDA ," +
                 " '') AS horaSalida," +
@@ -213,7 +212,7 @@ public class Salas {
         String idVelatorio = String.valueOf(jO.get("idVelatorio"));
         String query = "SELECT " +
                 "   SS.ID_SALA AS idSala, " +
-                "   SS.NOM_SALA AS nombreSala, " +
+                "   SS.DES_SALA AS nombreSala, " +
                 "   SS.ID_DISPONIBILIDAD AS indDisponibilidad, " +
                 "   CASE " +
                 "      WHEN SBS.FEC_ENTRADA = CURDATE() " +
@@ -265,7 +264,7 @@ public class Salas {
                 "  SBS.ID_REGISTRO AS idRegistro,  " +
                 "  SS.IND_TIPO_SALA AS indTipoSala,  " +
                 "  SBS.ID_SALA AS idSala,  " +
-                "  SS.NOM_SALA AS nombreSala,  " +
+                "  SS.DES_SALA AS nombreSala,  " +
                 "  CASE  " +
                 "  WHEN SBS.ID_TIPO_OCUPACION = 1  " +
                 "  THEN 'MANTENIMIENTO'  " +
@@ -278,10 +277,10 @@ public class Salas {
                 "    WHEN TIMESTAMPDIFF(MINUTE, SBS.TIM_HORA_ENTRADA, NOW()) >= 210   " +
                 "  AND SBS.TIM_HORA_SALIDA IS NULL  " +
                 "  AND SBS.TIM_RENOVACION IS NULL  " +
-                "  THEN CONCAT('En la sala ' , SS.NOM_SALA, ' el tiempo de atención del servicio ha excedido de las 3 horas y media, te recordamos que debes registrar la fecha y hora del término del servicio.')  " +
+                "  THEN CONCAT('En la sala ' , SS.DES_SALA, ' el tiempo de atención del servicio ha excedido de las 3 horas y media, te recordamos que debes registrar la fecha y hora del término del servicio.')  " +
                 "  WHEN SBS.TIM_RENOVACION  IS NOT NULL  " +
                 "  AND TIMESTAMPDIFF(MINUTE, SBS.TIM_RENOVACION, NOW()) >= 210  " +
-                "  THEN CONCAT('En la sala ' , SS.NOM_SALA, ' el tiempo de atención del servicio ha excedido de las 3 horas y media, te recordamos que debes registrar la fecha y hora del término del servicio.')  " +
+                "  THEN CONCAT('En la sala ' , SS.DES_SALA, ' el tiempo de atención del servicio ha excedido de las 3 horas y media, te recordamos que debes registrar la fecha y hora del término del servicio.')  " +
                 "  END   " +
                 "   , '')  " +
                 "  mensaje  " +
