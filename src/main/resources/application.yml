@@ -30,7 +30,7 @@ logging:
 
 endpoints:
   dominio-consulta: ${msit_CATALOGOS}
-  dominio-reportes: ${msit_REPORTES}
+  dominio-reportes: ${msit_REPORTES_GENERALES}
 
 jwt:
   secretkey-flujo: ${msit_SECRET_KEY}
