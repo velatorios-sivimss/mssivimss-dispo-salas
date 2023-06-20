@@ -7,13 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-/**
- * Clase ErrorsMessageResponse para regresar la respuesta de las execpeciones
- *
- * @author Pablo Nolasco
- * @puesto dev
- * @date abril. 2023
- */
+ 
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

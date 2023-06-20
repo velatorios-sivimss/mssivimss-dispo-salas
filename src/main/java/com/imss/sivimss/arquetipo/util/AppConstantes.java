@@ -1,12 +1,6 @@
 package com.imss.sivimss.arquetipo.util;
 
-/**
- * Clase para la paginacion
- *
- * @author Pablo Nolasco   
- * @puesto dev
- * @date  abril. 2023
- */
+ 
 public class AppConstantes {
 	
 	public static final String NUMERO_DE_PAGINA = "0";

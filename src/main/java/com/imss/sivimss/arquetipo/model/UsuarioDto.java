@@ -1,4 +1,4 @@
-package com.imss.sivimss.arquetipo.model.request;
+package com.imss.sivimss.arquetipo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

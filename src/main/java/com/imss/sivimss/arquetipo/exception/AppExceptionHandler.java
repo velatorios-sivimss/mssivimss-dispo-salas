@@ -17,13 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 import com.imss.sivimss.arquetipo.util.ErrorsMessageResponse;
 import com.imss.sivimss.arquetipo.util.ValidacionErrores;
 
-/**
- * Clase principal para manejar las excepciones de la aplicacion
- *
- * @author Pablo Nolasco
- * @puesto dev
- * @date abril. 2023
- */
+ 
 @ControllerAdvice // permite manejar exepciones handler de toda la aplicacion
 public class AppExceptionHandler {
 
