@@ -9,9 +9,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.imss.sivimss</groupId>
-	<artifactId>arquetipo</artifactId>
+	<artifactId>dispoSalas</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>catroles</name>
+	<name>dispoSalas</name>
 	<description>Ms arquetipo</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
