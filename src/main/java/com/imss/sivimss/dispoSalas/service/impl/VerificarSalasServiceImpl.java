@@ -125,7 +125,8 @@ public class VerificarSalasServiceImpl implements VerificarSalasService {
     public Response<?> consultaContratante(DatosRequest request, Authentication authentication) throws IOException {
         JsonParser parser = new JsonParser();
         JsonObject jO = (JsonObject) parser.parse((String) request.getDatos().get(AppConstantes.DATOS));
-        String folioODS = String.valueOf(jO.get("folioODS"));
+        String folioODS = jO.get("folioODS").getAsString();
+        log.info("folio ods -> " + folioODS);
         if (validarEstatusODSFolio(folioODS, authentication)) {
             return providerRestTemplate.consumirServicio(salas.obtenerDatosContratanteFinado(folioODS).getDatos(), urlDominioConsulta + "/consulta",
                     authentication);

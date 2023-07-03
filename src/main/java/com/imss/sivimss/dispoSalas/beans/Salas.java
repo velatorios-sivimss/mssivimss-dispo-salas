@@ -128,7 +128,7 @@ public class Salas {
     public DatosRequest verEstatusODSFolio(String cveFolio) {
         DatosRequest dr = new DatosRequest();
         Map<String, Object> parametro = new HashMap<>();
-        String query = "SELECT SOS.ID_ESTATUS_ORDEN_SERVICIO FROM SVC_ORDEN_SERVICIO SOS WHERE SOS.CVE_FOLIO = " + cveFolio + "";
+        String query = "SELECT SOS.ID_ESTATUS_ORDEN_SERVICIO FROM SVC_ORDEN_SERVICIO SOS WHERE SOS.CVE_FOLIO = '" + cveFolio + "'";
         String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
         parametro.put(AppConstantes.QUERY, encoded);
         dr.setDatos(parametro);
