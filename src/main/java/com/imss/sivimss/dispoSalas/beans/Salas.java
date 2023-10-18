@@ -78,7 +78,7 @@ public class Salas {
         query.agregarParametroValues("FEC_ENTRADA", "'" + registrarEntrada.getFechaEntrada() + "'");
         query.agregarParametroValues("TIM_HORA_ENTRADA", "'" + registrarEntrada.getHoraEntrada() + "'");
         query.agregarParametroValues("CAN_GAS_INICIAL", registrarEntrada.getCantidadGasInicial());
-        query.agregarParametroValues("DES_MANTENIMIENTO", "'" + registrarEntrada.getDescripcionMantenimiento() + "'");
+        query.agregarParametroValues("REF_MANTENIMIENTO", "'" + registrarEntrada.getDescripcionMantenimiento() + "'");
         query.agregarParametroValues("NOM_RESPONSABLE", "'" + nombreResponsable + "'");
         query.agregarParametroValues("IND_ACTIVO", "1");
         query.agregarParametroValues("ID_USUARIO_ALTA", String.valueOf(user.getIdUsuario()));
